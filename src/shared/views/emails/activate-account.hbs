@@ -1,0 +1,73 @@
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Ativação de Conta</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            @media only screen and (max-width: 600px) { .container { width: 100% !important; padding: 20px !important; }
+            .button { width: 100% !important; padding: 14px 0 !important; } }
+        </style>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+        <table align="center" width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
+            <tr>
+                <td align="center">
+                    <table
+                        class="container"
+                        width="600"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px;"
+                    >
+                        <!-- Header -->
+                        <tr>
+                            <td style="background-color: #006437; padding: 30px 40px; text-align: center;">
+                                <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Bem-vindo à {{platform}}!</h1>
+                            </td>
+                        </tr>
+
+                        <!-- Body -->
+                        <tr>
+                            <td style="padding: 30px 40px;">
+                                <p style="font-size: 16px; color: #333333;">Olá {{name}},</p>
+                                <p style="font-size: 16px; color: #333333;">
+                                    Obrigado por se registrar. Para ativar sua conta, clique no botão abaixo:
+                                </p>
+
+                                <p style="text-align: center; margin: 40px 0;">
+                                    <a
+                                        href="{{activationLink}}"
+                                        target="_blank"
+                                        class="button"
+                                        style="background-color: #006437; color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 16px; border-radius: 6px; display: inline-block;"
+                                    >
+                                        Ativar Conta
+                                    </a>
+                                </p>
+
+                                <p style="font-size: 14px; color: #666666;">
+                                    Caso o botão acima não funcione, copie e cole o link abaixo no seu navegador:
+                                </p>
+                                <p style="word-break: break-word; font-size: 14px; color: #006437;">
+                                    {{activationLink}}
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td
+                                style="background-color: #f9f9f9; padding: 20px 40px; text-align: center; font-size: 12px; color: #999999;"
+                            >
+                                ©
+                                {{year}}
+                                {{platform}}. Todos os direitos reservados.<br />
+                                Você está recebendo este email porque se registrou em nossa plataforma.
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
