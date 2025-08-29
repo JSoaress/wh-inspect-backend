@@ -8,7 +8,6 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 # Lock files
-yarn.lock
 package-lock.json
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
