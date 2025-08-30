@@ -7,10 +7,10 @@ const webhooksRoutes = new ExpressRouter("/webhooks", true);
 
 webhooksRoutes.register({
     method: "post",
-    path: "/in/:user/:slug",
+    path: "/in/:username/:slug",
     auth: false,
     middlewares(factory) {
-        return [authorizationBasedUser(factory.getUserByIdUseCase())];
+        return [authorizationBasedUser(factory.getUserUseCase())];
     },
     handler: async (factory, req, res, next) => {
         const { slug } = req.params;

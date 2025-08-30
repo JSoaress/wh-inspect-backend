@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { InvalidTokenError } from "@/app/_common";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
-import { GetUserByIdUseCase } from "@/app/users/application/use-cases/users/get-user-by-id";
+import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
 
 export function authorization(useCase: CheckAuthenticatedUserUseCase) {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -16,10 +16,10 @@ export function authorization(useCase: CheckAuthenticatedUserUseCase) {
     };
 }
 
-export function authorizationBasedUser(useCase: GetUserByIdUseCase) {
+export function authorizationBasedUser(useCase: GetUserUseCase) {
     return async (req: Request, res: Response, next: NextFunction) => {
-        const { user } = req.params;
-        const result = await useCase.execute({ id: user });
+        const { username } = req.params;
+        const result = await useCase.execute({ filter: { username } });
         if (result.isLeft()) return next(result.value);
         req.requestUser = result.value;
         return next();
