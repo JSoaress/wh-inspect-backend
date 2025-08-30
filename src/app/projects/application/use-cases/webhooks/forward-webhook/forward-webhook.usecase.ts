@@ -2,6 +2,7 @@ import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { NotFoundModelError, UseCase } from "@/app/_common";
+import { IWebSocket } from "@/infra/adapters/ws";
 
 import { IProjectRepository, IWebhookLogRepository } from "../../../repos";
 import {
@@ -14,7 +15,7 @@ export class ForwardWebhookUseCase extends UseCase<ForwardWebhookUseCaseInput, F
     private unitOfWork: UnitOfWork;
     private projectRepository: IProjectRepository;
     private webhookLogRepository: IWebhookLogRepository;
-    private ws: any;
+    private ws: IWebSocket;
 
     constructor({ repositoryFactory, ws }: ForwardWebhookUseCaseGateway) {
         super();
@@ -32,7 +33,7 @@ export class ForwardWebhookUseCase extends UseCase<ForwardWebhookUseCaseInput, F
             const project = await this.projectRepository.findOne({ filter: { id: webhookLog.projectId } });
             if (!project || !project.members.includes(requestUser.getId()))
                 return left(new NotFoundModelError("Project", webhookLog.projectId));
-            await this.ws.send(webhookLog);
+            this.ws.broadcast(requestUser.cliToken, webhookLog);
             return right(undefined);
         });
     }

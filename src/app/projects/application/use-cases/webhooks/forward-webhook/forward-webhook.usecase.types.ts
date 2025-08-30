@@ -3,11 +3,12 @@ import { PrimaryKey } from "ts-arch-kit/dist/core/models";
 
 import { NotFoundModelError } from "@/app/_common";
 import { User } from "@/app/users/domain/models/user";
+import { IWebSocket } from "@/infra/adapters/ws";
 import { IRepositoryFactory } from "@/infra/database";
 
 export type ForwardWebhookUseCaseGateway = {
     repositoryFactory: IRepositoryFactory;
-    ws: any;
+    ws: IWebSocket;
 };
 
 export type ForwardWebhookUseCaseInput = {
