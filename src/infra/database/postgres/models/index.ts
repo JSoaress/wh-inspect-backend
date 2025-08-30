@@ -12,6 +12,7 @@ export type PgUserDTO = PgModelId & {
     cli_token: string;
     user_token: string | null;
     created_at: Date;
+    is_admin: boolean;
     is_active: boolean;
 };
 

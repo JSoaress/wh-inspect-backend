@@ -18,6 +18,7 @@ export class UserPgMapper implements IDbMapper<User, PgUserDTO> {
                 cliToken: { columnName: "cli_token", type: "string" },
                 userToken: { columnName: "user_token", type: "string" },
                 createdAt: { columnName: "created_at", type: "date" },
+                isAdmin: { columnName: "is_admin", type: "boolean" },
                 isActive: { columnName: "is_active", type: "boolean" },
             },
         };
@@ -33,6 +34,7 @@ export class UserPgMapper implements IDbMapper<User, PgUserDTO> {
             cliToken: persistence.cli_token,
             userToken: persistence.user_token,
             createdAt: persistence.created_at,
+            isAdmin: persistence.is_admin,
             isActive: persistence.is_active,
         });
     }
@@ -47,6 +49,7 @@ export class UserPgMapper implements IDbMapper<User, PgUserDTO> {
             cli_token: entity.isNew || entity.checkDirtyProps("cliToken") ? entity.cliToken : undefined,
             user_token: entity.isNew || entity.checkDirtyProps("userToken") ? entity.userToken : undefined,
             created_at: entity.isNew || entity.checkDirtyProps("createdAt") ? entity.createdAt : undefined,
+            is_admin: entity.isNew || entity.checkDirtyProps("isAdmin") ? entity.isAdmin : undefined,
             is_active: entity.isNew || entity.checkDirtyProps("isActive") ? entity.isActive : undefined,
         };
     }
