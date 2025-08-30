@@ -2,7 +2,7 @@ import { IPresenter } from "ts-arch-kit/dist/core/helpers";
 
 import { User, UserDTO } from "@/app/users/domain/models/user";
 
-type UserJson = Omit<UserDTO, "password" | "userToken">;
+type UserJson = Omit<UserDTO, "password" | "userToken" | "isAdmin">;
 
 class UserJsonPresenter implements IPresenter<User, UserJson> {
     present(input: User): UserJson {
