@@ -80,14 +80,14 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
             } = await trx.query(query, values);
             return this.mapper.toDomain(newEntity);
         }
-        const updateObj = this.removeFieldsFromObject(persistenceData);
+        const updateObj = this.removeFieldsFromObject(persistenceData, ["id"]);
         const fields = Object.keys(updateObj);
         const values = Object.values(updateObj);
         const strFields = fields.map((f, i) => `${f} = $${i + 1}`).join(",");
-        const query = `UPDATE ${this.tableName} SET ${strFields} WHERE id = $${fields.length} RETURNING *;`;
+        const query = `UPDATE ${this.tableName} SET ${strFields} WHERE id = $${fields.length + 1} RETURNING *;`;
         const {
             rows: [updatedEntity],
-        } = await trx.query(query, values);
+        } = await trx.query(query, [...values, data.id]);
         return this.mapper.toDomain(updatedEntity);
     }
 
@@ -132,8 +132,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         return fragments.filter(Boolean).join(" ");
     }
 
-    removeFieldsFromObject(obj: Record<string, unknown>, ignore?: string[]): Record<string, unknown> {
-        if (!ignore || !ignore.length) return { ...obj };
+    removeFieldsFromObject(obj: Record<string, unknown>, ignore: string[] = []): Record<string, unknown> {
         const modifiedObj: Record<string, unknown> = {};
         Object.entries(obj).forEach(([k, v]) => {
             if (v !== undefined && !ignore?.includes(k)) modifiedObj[k] = v;
