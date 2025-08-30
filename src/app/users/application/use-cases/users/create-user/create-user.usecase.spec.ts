@@ -12,6 +12,7 @@ describe("create user use case", () => {
         const useCase = new CreateUserUseCase({ repositoryFactory, mail });
         const result = await useCase.execute({
             name: "Tony Stark",
+            username: "tony",
             email: "tony@stark.com",
             password: "i_love_papper",
         });

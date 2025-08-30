@@ -1,6 +1,6 @@
 import { Either } from "ts-arch-kit/dist/core/helpers";
 
-import { EmailTakenError, ValidationError } from "@/app/_common";
+import { EmailTakenError, UsernameTakenError, ValidationError } from "@/app/_common";
 import { CreateUserDTO, User } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
 import { IMail } from "@/infra/providers/mail";
@@ -12,4 +12,4 @@ export type CreateUserUseCaseGateway = {
 
 export type CreateUserUseCaseInput = CreateUserDTO;
 
-export type CreateUserUseCaseOutput = Either<ValidationError | EmailTakenError, User>;
+export type CreateUserUseCaseOutput = Either<ValidationError | EmailTakenError | UsernameTakenError, User>;

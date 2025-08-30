@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { EmailTakenError, UseCase } from "@/app/_common";
+import { EmailTakenError, UseCase, UsernameTakenError } from "@/app/_common";
 import { User, UserEntityFactory } from "@/app/users/domain/models/user";
 import { IMail } from "@/infra/providers/mail";
 import { env } from "@/shared/config/environment";
@@ -30,6 +30,8 @@ export class CreateUserUseCase extends UseCase<CreateUserUseCaseInput, CreateUse
             const userCreated = userOrError.value;
             const emailInUse = await this.userRepository.exists({ email: userCreated.email });
             if (emailInUse) return left(new EmailTakenError(userCreated.email));
+            const usernameInUse = await this.userRepository.exists({ username: userCreated.username });
+            if (usernameInUse) return left(new UsernameTakenError(userCreated.username));
             const savedUser = await this.userRepository.save(userCreated);
             await this.sendActivationEmail(savedUser);
             return right(savedUser);
