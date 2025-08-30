@@ -38,3 +38,15 @@ export type PgWebhookLogDTO = PgModelId & {
     replay_status: "success" | "fail" | null;
     target_url: string | null;
 };
+
+export type PgPlanDTO = PgModelId & {
+    name: string;
+    price: number;
+    events_month: number;
+    retention: number;
+    replay_events: number;
+    support: "community" | "email" | "priority";
+    created_at: Date;
+    visible: boolean;
+    is_active: boolean;
+};
