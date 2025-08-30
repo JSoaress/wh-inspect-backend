@@ -7,7 +7,10 @@ export const ProjectSchema = z.object({
     owner: z.uuid(),
     name: z.string(),
     description: z.string().nullish().default(null),
-    slug: z.string(),
+    slug: z
+        .string()
+        .max(25)
+        .regex(/^[a-zA-Z0-9-]+$/, "Informe apenas letras, dígitos e '-'."),
     createdAt: z.coerce.date().default(() => new Date()),
     isActive: z.coerce.boolean().default(true),
     members: z.array(z.uuid()).default([]),
