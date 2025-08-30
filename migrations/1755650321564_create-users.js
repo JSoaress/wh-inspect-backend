@@ -11,7 +11,8 @@ export const shorthands = undefined;
 export const up = (pgm) => {
     pgm.createTable("users", {
         id: { type: "uuid", primaryKey: true },
-        name: { type: "varchar(30)", notNull: true },
+        name: { type: "varchar(50)", notNull: true },
+        username: { type: "varchar(20)", notNull: true, unique: true },
         email: { type: "varchar(100)", notNull: true, unique: true },
         password: { type: "varchar", notNull: true },
         cli_token: { type: "varchar" },

@@ -6,6 +6,7 @@ type PgModelId = {
 
 export type PgUserDTO = PgModelId & {
     name: string;
+    username: string;
     email: string;
     password: string;
     cli_token: string;
