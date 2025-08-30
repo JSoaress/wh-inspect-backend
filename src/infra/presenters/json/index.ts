@@ -9,6 +9,7 @@ class UserJsonPresenter implements IPresenter<User, UserJson> {
         return {
             id: input.getId(),
             name: input.name,
+            username: input.username,
             email: input.email,
             cliToken: input.cliToken,
             createdAt: input.createdAt,
