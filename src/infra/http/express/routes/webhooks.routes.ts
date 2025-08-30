@@ -29,5 +29,15 @@ webhooksRoutes.register({
         return undefined;
     },
 });
+webhooksRoutes.register({
+    method: "post",
+    path: "/:webhook/replay",
+    buildInput(req) {
+        return { webhookLogId: req.params.webhook };
+    },
+    useCase(factory) {
+        return factory.replayWebhookUseCase();
+    },
+});
 
 export { webhooksRoutes };
