@@ -29,6 +29,8 @@ export class ExpressHttpServer {
             pipeline.push(this.buildHandler(route), middlewares.formatRespose);
             this.app[method](url, ...pipeline);
         });
+        this.app.use(middlewares.notFoundRoute);
+        this.app.use(middlewares.errorHandler);
     }
 
     private buildHandler(route: RouteDefinition) {
@@ -59,8 +61,6 @@ export class ExpressHttpServer {
     }
 
     listen(port: number, callback?: (p: number) => void): void {
-        this.app.use(middlewares.notFoundRoute);
-        this.app.use(middlewares.errorHandler);
         const cb = callback || ((p: number) => console.info(`Server ready and running on port ${p} with express.`));
         this.app.listen(port, () => cb(port));
     }
