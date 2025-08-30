@@ -101,6 +101,12 @@ export class EmailTakenError extends ConflictError {
     }
 }
 
+export class UsernameTakenError extends ConflictError {
+    constructor(username: string) {
+        super(`O nome de usuário "${username}" já está em uso.`);
+    }
+}
+
 export class ForbiddenError extends BasicError {
     constructor(message = "Você não possui permissão para acessar o recurso.") {
         super(message, true);
