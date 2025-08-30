@@ -41,6 +41,10 @@ export class User extends Entity<UserDTO> {
         return this.props.name;
     }
 
+    get username() {
+        return this.props.username;
+    }
+
     get email() {
         return this.props.email;
     }

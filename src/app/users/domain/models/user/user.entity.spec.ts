@@ -7,6 +7,7 @@ describe("user entity", () => {
     test("should create a new user", async () => {
         const userOrError = await UserEntityFactory.create({
             name: "Tony Stark",
+            username: "tony",
             email: "tony@stark.com",
             password: "i_love_papper",
         });
