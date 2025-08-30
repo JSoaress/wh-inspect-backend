@@ -9,8 +9,8 @@ import { CreateProjectDTO, ProjectDTO, ProjectSchema } from "./project.dto";
 function create(input: CreateProjectDTO): Either<ValidationError, ProjectDTO> {
     const validDataOrError = ZodValidator.validate(input, ProjectSchema);
     if (!validDataOrError.success) return left(new ValidationError("Project", validDataOrError.errors));
-    const { members, ...userProps } = validDataOrError.data;
-    const uniqueMembers = Array.from(new Set([...members, userProps.owner]));
+    const { members, ...projectProps } = validDataOrError.data;
+    const uniqueMembers = Array.from(new Set([...members, projectProps.owner]));
     return right({ id: randomUUID(), ...validDataOrError.data, members: uniqueMembers });
 }
 
