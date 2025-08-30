@@ -20,10 +20,13 @@ export class ExpressHttpServer {
     register(...controllers: ExpressRouter[]): void {
         const allRoutes = controllers.flatMap((controller) => controller.getRoutes());
         allRoutes.forEach((route) => {
-            const { method, path } = route;
+            const { method, path, auth } = route;
             const url = [this.baseUrl, ...path.split("/").filter(Boolean)].join("/");
             if (env.NODE_ENV !== "production") console.log(`[${method.toUpperCase()}] ${url}`);
-            this.app[method](url, this.buildHandler(route), middlewares.formatRespose);
+            const pipeline: express.RequestHandler[] = [];
+            if (auth) pipeline.push(middlewares.authorization(this.useCaseFactory.checkAuthenticatedUserUseCase()));
+            pipeline.push(this.buildHandler(route), middlewares.formatRespose);
+            this.app[method](url, ...pipeline);
         });
     }
 
@@ -44,7 +47,8 @@ export class ExpressHttpServer {
     private buildDefaultHandler({ useCase: useCaseFn, buildInput }: RouteDefinition): RouteHandler {
         return async (useCaseFactory, req, res, next) => {
             if (!useCaseFn) return next();
-            const input = buildInput ? buildInput(req) : req.body;
+            const { requestUser, body } = req;
+            const input = buildInput ? { ...buildInput(req), requestUser } : { ...body, requestUser };
             const useCase = useCaseFn(useCaseFactory);
             const response = await useCase.execute(input);
             if (response.isLeft()) next(response.value);

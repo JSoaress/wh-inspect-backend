@@ -25,10 +25,10 @@ export type RouteDefinition = {
 export class ExpressRouter {
     private routes: RouteDefinition[] = [];
 
-    constructor(private baseUrl?: string) {}
+    constructor(private baseUrl?: string, private auth?: boolean) {}
 
-    register({ path, ...params }: RouteDefinition) {
-        this.routes.push({ path: `${this.baseUrl ?? ""}${path}`, ...params });
+    register({ path, auth, ...params }: RouteDefinition) {
+        this.routes.push({ path: `${this.baseUrl ?? ""}${path}`, auth: this.auth || auth, ...params });
     }
 
     getRoutes(): RouteDefinition[] {
