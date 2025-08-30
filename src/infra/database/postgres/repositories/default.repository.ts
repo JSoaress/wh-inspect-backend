@@ -69,7 +69,8 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         let exists = false;
         if (data.id !== 0) exists = await this.exists({ id: data.id });
         if (!exists) {
-            const insertObj = this.removeFieldsFromObject(persistenceData);
+            const ignore: string[] = data.id === 0 ? ["id"] : [];
+            const insertObj = this.removeFieldsFromObject(persistenceData, ignore);
             const fields = Object.keys(insertObj);
             const values = Object.values(insertObj);
             const query = `INSERT INTO ${this.tableName} (${fields.join(",")}) VALUES (${values.map(
