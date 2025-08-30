@@ -5,6 +5,6 @@ export class HttpController {
     constructor(private httpServer: ExpressHttpServer) {}
 
     setup() {
-        this.httpServer.register(routes.userRoutes, routes.projectsRoutes, routes.authRoutes);
+        this.httpServer.register(routes.userRoutes, routes.projectsRoutes, routes.authRoutes, routes.webhooksRoutes);
     }
 }
