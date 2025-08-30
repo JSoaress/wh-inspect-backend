@@ -11,13 +11,13 @@ export type AuthenticateUserUseCaseGateway = {
 };
 
 export type AuthenticateUserUseCaseInput = {
-    email: string;
+    login: string;
     password: string;
 };
 
 type AuthenticatedUser = {
     accessToken: string;
-    user: Pick<UserDTO, "email" | "name" | "cliToken" | "isActive">;
+    user: Pick<UserDTO, "name" | "username" | "email" | "cliToken" | "isActive">;
 };
 
 export type AuthenticateUserUseCaseOutput = Either<

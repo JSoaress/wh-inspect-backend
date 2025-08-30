@@ -25,13 +25,14 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
         this.jwt = jwt;
     }
 
-    protected async impl({ email, password }: AuthenticateUserUseCaseInput): Promise<AuthenticateUserUseCaseOutput> {
-        if (!email || !password) {
-            const param = !email ? "email" : "password";
+    protected async impl({ login, password }: AuthenticateUserUseCaseInput): Promise<AuthenticateUserUseCaseOutput> {
+        if (!login || !password) {
+            const param = !login ? "login" : "password";
             return left(new MissingParamError(param, "body"));
         }
         return this.unitOfWork.execute<AuthenticateUserUseCaseOutput>(async () => {
-            const user = await this.userRepository.findOne({ filter: { email: email.toLowerCase() } });
+            let user = await this.userRepository.findOne({ filter: { email: login.toLowerCase() } });
+            if (!user) user = await this.userRepository.findOne({ filter: { username: login } });
             if (!user) return left(new InvalidCredentialsError());
             const matchPassword = await user.verifyPassword(password);
             if (!matchPassword) return left(new InvalidCredentialsError());
@@ -41,6 +42,7 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
                 accessToken,
                 user: {
                     name: user.name,
+                    username: user.username,
                     email: user.email,
                     cliToken: user.cliToken,
                     isActive: user.isActive,
