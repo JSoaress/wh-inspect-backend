@@ -65,6 +65,10 @@ export class User extends Entity<UserDTO> {
         return this.props.createdAt;
     }
 
+    get isAdmin() {
+        return this.props.isAdmin;
+    }
+
     get isActive() {
         return this.props.isActive;
     }

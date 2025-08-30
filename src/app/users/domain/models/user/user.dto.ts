@@ -16,6 +16,7 @@ export const UserSchema = z.object({
     cliToken: z.coerce.string().default(""),
     userToken: z.coerce.string().nullish().default(null),
     createdAt: z.coerce.date().default(() => new Date()),
+    isAdmin: z.coerce.boolean().default(false),
     isActive: z.coerce.boolean().default(false),
 });
 
