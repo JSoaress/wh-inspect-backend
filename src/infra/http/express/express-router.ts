@@ -26,11 +26,21 @@ export type RouteDefinition = {
 export class ExpressRouter {
     private routes: RouteDefinition[] = [];
 
-    constructor(private baseUrl?: string, private auth?: boolean) {}
+    constructor(private baseUrl?: string, private auth?: boolean, readonly middlewares?: RequestHandler[]) {}
 
-    register({ path, auth, ...params }: RouteDefinition) {
+    register({ path, auth, middlewares: routeMiddlewares, ...params }: RouteDefinition) {
         const withAuth = typeof auth === "boolean" ? auth : !!this.auth;
-        this.routes.push({ path: `${this.baseUrl ?? ""}${path}`, auth: withAuth, ...params });
+        const mergedMiddlewares = (factory: UseCaseFactory): RequestHandler[] => {
+            const global = this.middlewares ?? [];
+            const local = routeMiddlewares ? routeMiddlewares(factory) : [];
+            return [...global, ...local];
+        };
+        this.routes.push({
+            path: `${this.baseUrl ?? ""}${path}`,
+            auth: withAuth,
+            middlewares: mergedMiddlewares,
+            ...params,
+        });
     }
 
     getRoutes(): RouteDefinition[] {
