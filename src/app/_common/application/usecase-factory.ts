@@ -2,6 +2,8 @@ import { CreateProjectUseCase } from "@/app/projects/application/use-cases/proje
 import { ForwardWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/forward-webhook";
 import { ReceiveWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/receive-webhook";
 import { ReplayWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/replay-webhook";
+import { CreatePlanUseCase } from "@/app/subscription/application/use-cases/plan/create-plan";
+import { FetchPlansUseCase } from "@/app/subscription/application/use-cases/plan/fetch-plans";
 import { ActivateUserUseCase } from "@/app/users/application/use-cases/users/activate-user";
 import { AuthenticateUserUseCase } from "@/app/users/application/use-cases/users/authenticate-user";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
@@ -60,5 +62,13 @@ export class UseCaseFactory {
             repositoryFactory: this.repositoryFactory,
             forwardWebhookUseCase: this.forwardWebhookUseCase(),
         });
+    }
+
+    fetchPlansUseCase() {
+        return new FetchPlansUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    createPlanUseCase() {
+        return new CreatePlanUseCase({ repositoryFactory: this.repositoryFactory });
     }
 }
