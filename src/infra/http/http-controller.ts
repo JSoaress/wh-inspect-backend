@@ -1,10 +1,10 @@
 import { ExpressHttpServer } from "./express/express-server.http";
-import { userRoutes } from "./express/routes/users.routes";
+import * as routes from "./express/routes";
 
 export class HttpController {
     constructor(private httpServer: ExpressHttpServer) {}
 
     setup() {
-        this.httpServer.register(userRoutes);
+        this.httpServer.register(routes.userRoutes, routes.projectsRoutes, routes.authRoutes);
     }
 }
