@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { HttpMethods } from "ts-arch-kit/dist/http";
 
 import { UseCase } from "@/app/_common";
@@ -16,6 +16,7 @@ export type RouteDefinition = {
     method: HttpMethods;
     auth?: boolean;
     statusCode?: number;
+    middlewares?: (factory: UseCaseFactory) => RequestHandler[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useCase?: (factory: UseCaseFactory) => UseCase<any, any>;
     buildInput?: (req: Request) => Record<string, unknown>;
@@ -28,7 +29,8 @@ export class ExpressRouter {
     constructor(private baseUrl?: string, private auth?: boolean) {}
 
     register({ path, auth, ...params }: RouteDefinition) {
-        this.routes.push({ path: `${this.baseUrl ?? ""}${path}`, auth: this.auth || auth, ...params });
+        const withAuth = typeof auth === "boolean" ? auth : !!this.auth;
+        this.routes.push({ path: `${this.baseUrl ?? ""}${path}`, auth: withAuth, ...params });
     }
 
     getRoutes(): RouteDefinition[] {

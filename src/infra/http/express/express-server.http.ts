@@ -20,11 +20,12 @@ export class ExpressHttpServer {
     register(...controllers: ExpressRouter[]): void {
         const allRoutes = controllers.flatMap((controller) => controller.getRoutes());
         allRoutes.forEach((route) => {
-            const { method, path, auth } = route;
+            const { method, path, auth, middlewares: routeMiddlewares } = route;
             const url = [this.baseUrl, ...path.split("/").filter(Boolean)].join("/");
             if (env.NODE_ENV !== "production") console.log(`[${method.toUpperCase()}] ${url}`);
             const pipeline: express.RequestHandler[] = [];
             if (auth) pipeline.push(middlewares.authorization(this.useCaseFactory.checkAuthenticatedUserUseCase()));
+            if (routeMiddlewares) pipeline.push(...routeMiddlewares(this.useCaseFactory));
             pipeline.push(this.buildHandler(route), middlewares.formatRespose);
             this.app[method](url, ...pipeline);
         });
