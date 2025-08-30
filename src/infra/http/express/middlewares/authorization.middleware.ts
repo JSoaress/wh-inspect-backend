@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { InvalidTokenError } from "@/app/_common";
+import { ForbiddenError, InvalidTokenError } from "@/app/_common";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
 
@@ -24,4 +24,9 @@ export function authorizationBasedUser(useCase: GetUserUseCase) {
         req.requestUser = result.value;
         return next();
     };
+}
+
+export function isAdmin(req: Request, res: Response, next: NextFunction) {
+    if (!req.requestUser.isAdmin) return next(new ForbiddenError());
+    return next();
 }
