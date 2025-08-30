@@ -64,4 +64,8 @@ export class ExpressHttpServer {
         const cb = callback || ((p: number) => console.info(`Server ready and running on port ${p} with express.`));
         this.app.listen(port, () => cb(port));
     }
+
+    getServer() {
+        return this.app;
+    }
 }
