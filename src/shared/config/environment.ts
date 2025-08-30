@@ -9,4 +9,5 @@ export const env = {
     MAIL_PORT: envVar.get("MAIL_PORT").required().asInt(),
     MAIL_USER: envVar.get("MAIL_USER").required().asString(),
     MAIL_PASS: envVar.get("MAIL_PASS").required().asString(),
+    JWT_TOKEN_SECRET: envVar.get("JWT_TOKEN_SECRET").required().asString(),
 };
