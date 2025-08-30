@@ -66,7 +66,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
     async save(data: T): Promise<T> {
         const trx = this.getTransaction();
         const persistenceData = this.mapper.toPersistence(data);
-        let exists = true;
+        let exists = false;
         if (data.id !== 0) exists = await this.exists({ id: data.id });
         if (!exists) {
             const insertObj = this.removeFieldsFromObject(persistenceData);
