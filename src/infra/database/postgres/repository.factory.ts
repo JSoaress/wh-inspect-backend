@@ -22,7 +22,7 @@ export class PgRepositoryFactory implements IRepositoryFactory {
     }
 
     createWebhookLogRepository(): IWebhookLogRepository {
-        return new repos.DefaultPgRepository("webhooks", new mappers.WebhookLogPgMapper());
+        return new repos.WebhookLogPgRepository();
     }
 
     createPlanRepository(): IPlanRepository {
