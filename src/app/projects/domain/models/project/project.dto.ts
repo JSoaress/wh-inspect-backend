@@ -21,3 +21,5 @@ type Schema = typeof ProjectSchema;
 export type ProjectDTO = Required<AbstractModelProps> & z.output<Schema>;
 
 export type CreateProjectDTO = z.input<Schema>;
+
+export type UpdateProjectDTO = Partial<Omit<CreateProjectDTO, "slug">>;
