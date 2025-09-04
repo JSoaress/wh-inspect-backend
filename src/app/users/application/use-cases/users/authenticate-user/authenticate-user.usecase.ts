@@ -41,6 +41,7 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
             return right({
                 accessToken,
                 user: {
+                    id: user.getId(),
                     name: user.name,
                     username: user.username,
                     email: user.email,
