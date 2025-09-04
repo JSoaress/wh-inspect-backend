@@ -1,4 +1,7 @@
 import { CreateProjectUseCase } from "@/app/projects/application/use-cases/projects/create-project";
+import { DeleteProjectUseCase } from "@/app/projects/application/use-cases/projects/delete-project";
+import { FetchProjectsUseCase } from "@/app/projects/application/use-cases/projects/fetch-projects";
+import { UpdateProjectUseCase } from "@/app/projects/application/use-cases/projects/update-project";
 import { ForwardWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/forward-webhook";
 import { ReceiveWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/receive-webhook";
 import { ReplayWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/replay-webhook";
@@ -42,8 +45,20 @@ export class UseCaseFactory {
         return new GetUserUseCase({ repositoryFactory: this.repositoryFactory });
     }
 
+    fetchProjectsUseCase() {
+        return new FetchProjectsUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
     createProjectUseCase() {
         return new CreateProjectUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    updateProjectUseCase() {
+        return new UpdateProjectUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    DeleteProjectUseCase() {
+        return new DeleteProjectUseCase({ repositoryFactory: this.repositoryFactory });
     }
 
     receiveWebhookUseCase() {
