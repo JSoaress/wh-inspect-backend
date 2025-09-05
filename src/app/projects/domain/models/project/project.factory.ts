@@ -19,8 +19,8 @@ function restore(input: ProjectDTO): ProjectDTO {
 }
 
 function update(project: ProjectDTO, input: UpdateProjectDTO): Either<ValidationError, ProjectDTO> {
-    const { id, slug, owner } = project;
-    const validDataOrError = ZodValidator.validate({ ...input, slug, owner }, ProjectSchema);
+    const { id, slug, owner, ...rest } = project;
+    const validDataOrError = ZodValidator.validate({ ...rest, ...input, slug, owner }, ProjectSchema);
     if (!validDataOrError.success) return left(new ValidationError("Project", validDataOrError.errors));
     const { members, ...projectProps } = validDataOrError.data;
     const uniqueMembers = Array.from(new Set([...members, projectProps.owner]));
