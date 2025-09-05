@@ -52,7 +52,8 @@ export class PgWhereFilter extends DatabaseFilter<string> {
         return conditions.filter(Boolean).join(" AND ");
     }
 
-    private quotesInValue(type: DbColumnType, value: unknown) {
+    private quotesInValue(type: DbColumnType, value: unknown): unknown {
+        if (Array.isArray(value)) return value.map((v) => this.quotesInValue(type, v));
         if (type === "string") return `'${value}'`;
         // if (type === "date") return `'${dateHandler.format(value as string, "yyyy-MM-dd")}'`;
         // if (type === "hour") return `'${dateHandler.format(value as string, "HH:mm:ss")}'`;
