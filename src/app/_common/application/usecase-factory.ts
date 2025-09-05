@@ -57,7 +57,7 @@ export class UseCaseFactory {
         return new UpdateProjectUseCase({ repositoryFactory: this.repositoryFactory });
     }
 
-    DeleteProjectUseCase() {
+    deleteProjectUseCase() {
         return new DeleteProjectUseCase({ repositoryFactory: this.repositoryFactory });
     }
 

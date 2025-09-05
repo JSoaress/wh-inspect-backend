@@ -36,7 +36,7 @@ projectsRoutes.register({
         return { id: req.params.project };
     },
     useCase(factory) {
-        return factory.DeleteProjectUseCase();
+        return factory.deleteProjectUseCase();
     },
 });
 
