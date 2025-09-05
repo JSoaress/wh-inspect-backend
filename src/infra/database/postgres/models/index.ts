@@ -43,11 +43,14 @@ export type PgWebhookLogDTO = PgModelId & {
 export type PgPlanDTO = PgModelId & {
     name: string;
     price: number;
+    is_paid: boolean;
+    billing_cycle: "monthly" | "quarterly" | "annual";
     events_month: number;
     retention: number;
     replay_events: number;
     support: "community" | "email" | "priority";
     created_at: Date;
+    updated_at: Date | null;
     visible: boolean;
     is_active: boolean;
 };
