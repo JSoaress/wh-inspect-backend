@@ -9,20 +9,20 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable("plans", {
+    pgm.createTable("subscriptions", {
         id: { type: "uuid", primaryKey: true },
-        name: { type: "varchar", notNull: true },
+        user_id: { type: "uuid", notNull: true, references: '"users"' },
+        plan_id: { type: "uuid", notNull: true, references: '"plans"' },
         price: { type: "numeric(15,2)", notNull: true, default: 0 },
-        is_paid: { type: "bool", notNull: true },
-        billing_cycle: { type: "varchar", notNull: true },
+        start_date: { type: "timestamp", notNull: true },
+        end_date: { type: "timestamp" },
+        payment_method: { type: "varchar", notNull: true },
+        last_payment: { type: "timestamp", notNull: true },
+        next_payment: { type: "timestamp" },
         events_month: { type: "integer", notNull: true, default: 0 },
         retention: { type: "integer", notNull: true, default: 0 },
         replay_events: { type: "integer", notNull: true, default: 0 },
         support: { type: "varchar", notNull: true },
-        created_at: { type: "timestamp", notNull: true },
-        updated_at: { type: "timestamp" },
-        visible: { type: "bool", notNull: true, default: true },
-        is_active: { type: "bool", notNull: true, default: true },
     });
 };
 
@@ -32,5 +32,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-    pgm.dropTable("plans");
+    pgm.dropTable("subscriptions");
 };
