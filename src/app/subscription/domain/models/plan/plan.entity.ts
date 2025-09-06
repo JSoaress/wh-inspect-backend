@@ -4,7 +4,7 @@ import { Entity, ValidationError } from "@/app/_common";
 import { User } from "@/app/users/domain/models/user";
 import { ZodValidator } from "@/infra/libs/zod";
 
-import { PaymentMethods, SubscriptionDTO, SubscriptionEntityFactory } from "../subscription";
+import { PaymentMethods, Subscription, SubscriptionEntityFactory } from "../subscription";
 import { CreatePlanDTO, PlanDTO, PlanSchema, RestorePlanDTO } from "./plan.dto";
 
 export class Plan extends Entity<PlanDTO> {
@@ -32,6 +32,10 @@ export class Plan extends Entity<PlanDTO> {
 
     get billingCycle() {
         return this.props.billingCycle;
+    }
+
+    get maxProjects() {
+        return this.props.maxProjects;
     }
 
     get eventsMonth() {
@@ -73,7 +77,7 @@ export class Plan extends Entity<PlanDTO> {
         return 365;
     }
 
-    subscribe(subscriber: User, paymentMethod: PaymentMethods): Either<ValidationError, SubscriptionDTO> {
+    subscribe(subscriber: User, paymentMethod: PaymentMethods): Either<ValidationError, Subscription> {
         const now = new Date();
         const subscriptionOrError = SubscriptionEntityFactory.create({
             planId: this.getId(),
@@ -83,6 +87,7 @@ export class Plan extends Entity<PlanDTO> {
             lastPayment: now,
             paymentMethod,
             nextPayment: this.isPaid ? now.setDate(now.getDate() + this.getDaysUntilNextPayment()) : null,
+            maxProjects: this.maxProjects,
             eventsMonth: this.eventsMonth,
             retention: this.retention,
             replayEvents: this.replayEvents,
