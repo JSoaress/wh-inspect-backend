@@ -1,7 +1,10 @@
+import { User } from "@/app/users/domain/models/user";
 import { IRepository } from "@/infra/database";
 
-import { SubscriptionDTO } from "../../domain/models/subscription";
+import { Subscription, SubscriptionConsumptionDTO, SubscriptionDTO } from "../../domain/models/subscription";
 
 export type SubscriptionWhereRepository = SubscriptionDTO;
 
-export type ISubscriptionRepository = IRepository<SubscriptionDTO>;
+export interface ISubscriptionRepository extends IRepository<Subscription, SubscriptionWhereRepository> {
+    getConsumptionByUser(user: User): Promise<SubscriptionConsumptionDTO>;
+}
