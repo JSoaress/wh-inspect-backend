@@ -43,5 +43,15 @@ projectsRoutes.register({
         return factory.deleteProjectUseCase();
     },
 });
+projectsRoutes.register({
+    method: "post",
+    path: "/:project/members",
+    buildInput(req) {
+        return { ...req.body, id: req.params.project };
+    },
+    useCase(factory) {
+        return factory.manageProjectMembersUseCase();
+    },
+});
 
 export { projectsRoutes };
