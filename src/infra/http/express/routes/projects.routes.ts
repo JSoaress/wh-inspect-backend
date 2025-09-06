@@ -1,6 +1,7 @@
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
 import { ExpressRouter } from "../express-router";
+import { checkPlanLimit } from "../middlewares";
 
 const projectsRoutes = new ExpressRouter("/projects", true);
 
@@ -15,6 +16,9 @@ projectsRoutes.register({
     method: "post",
     path: "/",
     statusCode: HttpStatusCodes.CREATED,
+    middlewares(factory) {
+        return [checkPlanLimit("add-project", factory.checkSubscriptionConsumption())];
+    },
     useCase(factory) {
         return factory.createProjectUseCase();
     },
