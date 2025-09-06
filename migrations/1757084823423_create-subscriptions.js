@@ -19,9 +19,10 @@ export const up = (pgm) => {
         payment_method: { type: "varchar", notNull: true },
         last_payment: { type: "timestamp", notNull: true },
         next_payment: { type: "timestamp" },
+        max_projects: { type: "integer", notNull: true, default: 0 },
         events_month: { type: "integer", notNull: true, default: 0 },
         retention: { type: "integer", notNull: true, default: 0 },
-        replay_events: { type: "integer", notNull: true, default: 0 },
+        replay_events: { type: "bool", notNull: true, default: false },
         support: { type: "varchar", notNull: true },
     });
 };
