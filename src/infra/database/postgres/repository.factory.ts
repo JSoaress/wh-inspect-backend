@@ -1,7 +1,7 @@
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { IProjectRepository, IWebhookLogRepository } from "@/app/projects/application/repos";
-import { IPlanRepository } from "@/app/subscription/application/repos";
+import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { IUserRepository } from "@/app/users/application/repos";
 
 import { IRepositoryFactory } from "../repository.factory";
@@ -27,5 +27,9 @@ export class PgRepositoryFactory implements IRepositoryFactory {
 
     createPlanRepository(): IPlanRepository {
         return new repos.DefaultPgRepository("plans", new mappers.PlanPgMapper());
+    }
+
+    createSubscriptionRepository(): ISubscriptionRepository {
+        return new repos.SubscriptionPgRepository();
     }
 }
