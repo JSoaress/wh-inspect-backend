@@ -1,5 +1,7 @@
 import { PrimaryKey } from "ts-arch-kit/dist/core/models";
 
+import { PaymentMethods } from "@/app/subscription/domain/models/subscription";
+
 type PgModelId = {
     id: PrimaryKey;
 };
@@ -55,3 +57,13 @@ export type PgPlanDTO = PgModelId & {
     visible: boolean;
     is_active: boolean;
 };
+
+export type PgSubscriptionDTO = PgModelId & {
+    user_id: string;
+    plan_id: string;
+    start_date: Date;
+    end_date: Date | null;
+    payment_method: PaymentMethods;
+    last_payment: Date;
+    next_payment: Date | null;
+} & Pick<PgPlanDTO, "price" | "max_projects" | "events_month" | "retention" | "replay_events" | "support">;
