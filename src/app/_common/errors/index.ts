@@ -118,3 +118,25 @@ export class InvalidUserError extends BasicError {
         super("O usuário está inválido", true);
     }
 }
+
+export class InvalidSubscriptionActionError extends BasicError {
+    constructor(action: string) {
+        super(`A ação "${action}" não é válida.`, true);
+    }
+}
+
+export class NoSubscriptionPlanError extends ConflictError {
+    constructor() {
+        super("O usuário não possui um plano de assinatura ativo.");
+    }
+}
+
+export class PlanLimitReachedError extends ForbiddenError {
+    constructor(resource: string, quantity = 0) {
+        if (resource === "replay") {
+            super(`Seu plano não permite realizar replays de webhooks.`);
+        } else {
+            super(`Seu plano atingiu o limite máximo de ${resource}/mês: ${quantity}`);
+        }
+    }
+}
