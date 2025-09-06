@@ -1,19 +1,12 @@
-import { randomUUID } from "node:crypto";
-import { Either, left, right } from "ts-arch-kit/dist/core/helpers";
+import { CreateSubscriptionDTO, RestoreSubscriptionDTO } from "./subscription.dto";
+import { Subscription } from "./subscription.entity";
 
-import { ValidationError } from "@/app/_common";
-import { ZodValidator } from "@/infra/libs/zod";
-
-import { CreateSubscriptionDTO, SubscriptionDTO, SubscriptionSchema } from "./subscription.dto";
-
-function create(input: CreateSubscriptionDTO): Either<ValidationError, SubscriptionDTO> {
-    const validDataOrError = ZodValidator.validate(input, SubscriptionSchema);
-    if (!validDataOrError.success) return left(new ValidationError("Subscription", validDataOrError.errors));
-    return right({ id: randomUUID(), ...validDataOrError.data });
+function create(input: CreateSubscriptionDTO) {
+    return Subscription.create(input);
 }
 
-function restore(input: SubscriptionDTO): SubscriptionDTO {
-    return { ...input };
+function restore(input: RestoreSubscriptionDTO) {
+    return Subscription.restore(input);
 }
 
 export const SubscriptionEntityFactory = { create, restore };
