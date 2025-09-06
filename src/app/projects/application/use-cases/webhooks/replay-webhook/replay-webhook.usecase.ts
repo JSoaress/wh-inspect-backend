@@ -40,8 +40,8 @@ export class ReplayWebhookUseCase extends UseCase<ReplayWebhookUseCaseInput, Rep
                 return left(new NotFoundModelError("Project", webhookLog.projectId));
             const webhookLogOrError = WebHookLogEntityFactory.create({
                 ...webhookLog,
-                headers: input.headers || webhookLog.headers,
-                body: input.body || webhookLog.body,
+                headers: { ...webhookLog.headers, ...input.headers },
+                body: { ...webhookLog.body, ...input.body },
                 replayedFrom: `${webhookLogId}`,
                 replayedAt: new Date(),
                 replayStatus: "success",
