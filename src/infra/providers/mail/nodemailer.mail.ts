@@ -25,7 +25,7 @@ export class NodemailerMail extends Mail {
         if (template) templateHTML = this.compileTemplate(template.path, template.variables || {});
         await this.client?.sendMail({
             to,
-            from: "Admin <noreply@observium.com.br>",
+            from: `Admin <${env.MAIL_USER}>`,
             subject,
             html: templateHTML,
         });
