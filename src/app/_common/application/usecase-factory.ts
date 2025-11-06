@@ -13,6 +13,7 @@ import { UpdatePlanUseCase } from "@/app/subscription/application/use-cases/plan
 import { CheckSubscriptionConsumptionUseCase } from "@/app/subscription/application/use-cases/subscription/check-subscription-consumption";
 import { ActivateUserUseCase } from "@/app/users/application/use-cases/users/activate-user";
 import { AuthenticateUserUseCase } from "@/app/users/application/use-cases/users/authenticate-user";
+import { ChangePasswordUseCase } from "@/app/users/application/use-cases/users/change-password";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { CreateUserUseCase } from "@/app/users/application/use-cases/users/create-user";
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
@@ -105,5 +106,9 @@ export class UseCaseFactory {
 
     checkSubscriptionConsumption() {
         return new CheckSubscriptionConsumptionUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    changePasswordUseCase() {
+        return new ChangePasswordUseCase({ repositoryFactory: this.repositoryFactory });
     }
 }
