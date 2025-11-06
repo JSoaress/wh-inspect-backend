@@ -5,17 +5,24 @@ import { User } from "@/app/users/domain/models/user";
 import { ZodValidator } from "@/infra/libs/zod";
 
 import { PaymentMethods, Subscription, SubscriptionEntityFactory } from "../subscription";
-import { CreatePlanDTO, PlanDTO, PlanSchema, RestorePlanDTO } from "./plan.dto";
+import { CreatePlanDTO, PlanDTO, PlanSchema, RestorePlanDTO, UpdatePlanDTO } from "./plan.dto";
 
 export class Plan extends Entity<PlanDTO> {
     static create(input: CreatePlanDTO): Either<ValidationError, Plan> {
         const validDataOrError = ZodValidator.validate({ ...input, createdAt: new Date() }, PlanSchema);
-        if (!validDataOrError.success) return left(new ValidationError("Plan", validDataOrError.errors));
+        if (!validDataOrError.success) return left(new ValidationError(Plan.name, validDataOrError.errors));
         return right(new Plan(validDataOrError.data));
     }
 
     static restore(input: RestorePlanDTO) {
         return new Plan(input);
+    }
+
+    update(input: UpdatePlanDTO): Either<ValidationError, void> {
+        const validDataOrError = ZodValidator.validate({ ...this.props, ...input, updatedAt: new Date() }, PlanSchema);
+        if (!validDataOrError.success) return left(new ValidationError(Plan.name, validDataOrError.errors));
+        this.updateObj(validDataOrError.data, ["createdAt"]);
+        return right(undefined);
     }
 
     get name() {

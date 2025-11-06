@@ -1,4 +1,4 @@
-import { CreatePlanDTO, RestorePlanDTO } from "./plan.dto";
+import { CreatePlanDTO, RestorePlanDTO, UpdatePlanDTO } from "./plan.dto";
 import { Plan } from "./plan.entity";
 
 function create(input: CreatePlanDTO) {
@@ -9,4 +9,8 @@ function restore(input: RestorePlanDTO) {
     return Plan.restore(input);
 }
 
-export const PlanEntityFactory = { create, restore };
+function update(instance: Plan, input: UpdatePlanDTO) {
+    return instance.update(input);
+}
+
+export const PlanEntityFactory = { create, update, restore };

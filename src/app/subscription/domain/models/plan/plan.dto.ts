@@ -25,4 +25,6 @@ export type PlanDTO = AbstractModelProps & z.output<Schema>;
 
 export type CreatePlanDTO = Omit<z.input<Schema>, "createdAt" | "updatedAt">;
 
+export type UpdatePlanDTO = Partial<CreatePlanDTO>;
+
 export type RestorePlanDTO = RequireOnly<PlanDTO, "id">;
