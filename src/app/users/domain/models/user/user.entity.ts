@@ -80,11 +80,12 @@ export class User extends Entity<UserDTO> {
     }
 
     async setPassword(
-        token: string,
-        plainPassword: string
+        plainPassword: string,
+        token?: string
     ): Promise<Either<InvalidUserError | InvalidTokenError | InvalidPasswordError, void>> {
         if (!this.isActive) return left(new InvalidUserError());
-        if (token !== this.props.userToken) return left(new InvalidTokenError("Token de alteração de senha é inválido."));
+        if (token && token !== this.props.userToken)
+            return left(new InvalidTokenError("Token de alteração de senha é inválido."));
         const passwordOrError = await Password.create(plainPassword);
         if (passwordOrError.isLeft()) return left(passwordOrError.value);
         this.props.password = passwordOrError.value;
@@ -92,7 +93,7 @@ export class User extends Entity<UserDTO> {
         return right(undefined);
     }
 
-    putChangePasswordToken(): Either<Error, string> {
+    putChangePasswordToken(): Either<InvalidUserError, string> {
         if (!this.isActive) return left(new InvalidUserError());
         const token = User.generateToken("cp");
         this.props.userToken = token;
