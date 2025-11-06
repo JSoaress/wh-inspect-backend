@@ -140,3 +140,15 @@ export class PlanLimitReachedError extends ForbiddenError {
         }
     }
 }
+
+export class UndefinedFreemiumPlanError extends BasicError {
+    constructor() {
+        super("O plano Freemium não foi configurado.", false);
+    }
+}
+
+export class SystemParameterNotConfiguredError extends BasicError {
+    constructor(key: string) {
+        super(`O parâmetro de sistema "${key}" não foi configurado.`, false);
+    }
+}
