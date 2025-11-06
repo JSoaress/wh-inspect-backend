@@ -9,4 +9,12 @@ export abstract class Entity<T extends AbstractModelProps> extends AbstractModel
     getId(): string {
         return `${this.id}`;
     }
+
+    protected updateObj(input: Partial<Omit<T, "id">>, ignore: (keyof T)[] = []) {
+        Object.entries(input).forEach(([k, v]) => {
+            const key = k as keyof T;
+            const value = v as T[keyof T];
+            if (value !== undefined && !ignore.includes(key) && this.props[key] !== value) this.props[key] = value;
+        });
+    }
 }
