@@ -9,5 +9,19 @@ authRoutes.register({
         return factory.authenticateUserUseCase();
     },
 });
+authRoutes.register({
+    method: "post",
+    path: "/password-recovery/send-email",
+    useCase(factory) {
+        return factory.sendEmailForPasswordRecoveryUseCase();
+    },
+});
+authRoutes.register({
+    method: "post",
+    path: "/password-recovery/reset",
+    useCase(factory) {
+        return factory.resetPasswordUseCase();
+    },
+});
 
 export { authRoutes };

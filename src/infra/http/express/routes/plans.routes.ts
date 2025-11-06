@@ -20,5 +20,25 @@ plansRoutes.register({
         return factory.createPlanUseCase();
     },
 });
+plansRoutes.register({
+    method: "patch",
+    path: "/:plan",
+    buildInput(req) {
+        return { ...req.body, id: req.params.plan };
+    },
+    useCase(factory) {
+        return factory.updatePlanUseCase();
+    },
+});
+plansRoutes.register({
+    method: "delete",
+    path: "/:plan",
+    buildInput(req) {
+        return { id: req.params.plan };
+    },
+    useCase(factory) {
+        return factory.deletePlanUseCase();
+    },
+});
 
 export { plansRoutes };

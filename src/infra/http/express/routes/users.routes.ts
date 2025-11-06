@@ -5,19 +5,27 @@ import { ExpressRouter } from "../express-router";
 const userRoutes = new ExpressRouter("/users");
 
 userRoutes.register({
-    path: "/",
     method: "post",
+    path: "/",
     statusCode: HttpStatusCodes.CREATED,
     useCase(factory) {
         return factory.createUserUseCase();
     },
 });
 userRoutes.register({
-    path: "/activate",
     method: "post",
+    path: "/activate",
     statusCode: HttpStatusCodes.NO_CONTENT,
     useCase(factory) {
         return factory.activateUserUseCase();
+    },
+});
+userRoutes.register({
+    method: "post",
+    path: "/change-password",
+    auth: true,
+    useCase(factory) {
+        return factory.changePasswordUseCase();
     },
 });
 
