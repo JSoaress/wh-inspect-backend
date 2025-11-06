@@ -17,6 +17,7 @@ import { ChangePasswordUseCase } from "@/app/users/application/use-cases/users/c
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { CreateUserUseCase } from "@/app/users/application/use-cases/users/create-user";
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
+import { ResetPasswordUseCase } from "@/app/users/application/use-cases/users/reset-password";
 import { SendEmailForPasswordRecoveryUseCase } from "@/app/users/application/use-cases/users/send-email-for-password-recovery";
 import { JsonWebToken } from "@/infra/adapters/jwt";
 import { IWebSocket } from "@/infra/adapters/ws";
@@ -111,6 +112,10 @@ export class UseCaseFactory {
 
     changePasswordUseCase() {
         return new ChangePasswordUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    sendEmailForPasswordRecoveryUseCase() {
+        return new SendEmailForPasswordRecoveryUseCase({ repositoryFactory: this.repositoryFactory, mail: this.mail });
     }
 
     resetPasswordUseCase() {
