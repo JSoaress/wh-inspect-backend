@@ -1,6 +1,7 @@
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { IProjectRepository, IWebhookLogRepository } from "@/app/projects/application/repos";
+import { IParameterRepository } from "@/app/settings/application/repos";
 import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { IUserRepository } from "@/app/users/application/repos";
 import { MissingDependencyError } from "@/shared/errors";
@@ -14,6 +15,7 @@ export interface IRepositoryFactory {
     createWebhookLogRepository(): IWebhookLogRepository;
     createPlanRepository(): IPlanRepository;
     createSubscriptionRepository(): ISubscriptionRepository;
+    createParameterRepository(): IParameterRepository;
 }
 
 export class RepositoryFactory {

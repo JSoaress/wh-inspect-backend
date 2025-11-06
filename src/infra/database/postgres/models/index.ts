@@ -67,3 +67,9 @@ export type PgSubscriptionDTO = PgModelId & {
     last_payment: Date;
     next_payment: Date | null;
 } & Pick<PgPlanDTO, "price" | "max_projects" | "events_month" | "retention" | "replay_events" | "support">;
+
+export type PgParameterDTO = PgModelId & {
+    key: string;
+    value: string;
+    is_system: boolean;
+};
