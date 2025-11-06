@@ -9,6 +9,7 @@ import { ReplayWebhookUseCase } from "@/app/projects/application/use-cases/webho
 import { CreatePlanUseCase } from "@/app/subscription/application/use-cases/plan/create-plan";
 import { DeletePlanUseCase } from "@/app/subscription/application/use-cases/plan/delete-plan";
 import { FetchPlansUseCase } from "@/app/subscription/application/use-cases/plan/fetch-plans";
+import { UpdatePlanUseCase } from "@/app/subscription/application/use-cases/plan/update-plan";
 import { CheckSubscriptionConsumptionUseCase } from "@/app/subscription/application/use-cases/subscription/check-subscription-consumption";
 import { ActivateUserUseCase } from "@/app/users/application/use-cases/users/activate-user";
 import { AuthenticateUserUseCase } from "@/app/users/application/use-cases/users/authenticate-user";
@@ -92,6 +93,10 @@ export class UseCaseFactory {
 
     createPlanUseCase() {
         return new CreatePlanUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    updatePlanUseCase() {
+        return new UpdatePlanUseCase({ repositoryFactory: this.repositoryFactory });
     }
 
     deletePlanUseCase() {
