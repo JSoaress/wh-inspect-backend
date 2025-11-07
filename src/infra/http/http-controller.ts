@@ -10,7 +10,8 @@ export class HttpController {
             routes.projectsRoutes,
             routes.authRoutes,
             routes.webhooksRoutes,
-            routes.plansRoutes
+            routes.plansRoutes,
+            routes.plansRoutes2
         );
     }
 }

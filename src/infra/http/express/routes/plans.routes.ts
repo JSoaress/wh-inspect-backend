@@ -41,4 +41,18 @@ plansRoutes.register({
     },
 });
 
-export { plansRoutes };
+const plansRoutes2 = new ExpressRouter("/plans", true);
+
+plansRoutes2.register({
+    method: "post",
+    path: "/:plan/subscribe",
+    statusCode: HttpStatusCodes.CREATED,
+    buildInput(req) {
+        return { ...req.body, selectedPlanId: req.params.plan };
+    },
+    useCase(factory) {
+        return factory.subscribePlanUseCase();
+    },
+});
+
+export { plansRoutes, plansRoutes2 };
