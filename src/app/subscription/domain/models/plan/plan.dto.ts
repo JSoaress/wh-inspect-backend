@@ -7,6 +7,7 @@ export const PlanSchema = z.object({
     name: z.string(),
     price: z.coerce.number().nonnegative(),
     isPaid: z.boolean(),
+    tier: z.coerce.number().int().nonnegative(),
     billingCycle: z.enum(["monthly", "quarterly", "annual"]),
     maxProjects: z.coerce.number().int(),
     eventsMonth: z.coerce.number().int(),

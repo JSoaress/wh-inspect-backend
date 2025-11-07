@@ -37,6 +37,10 @@ export class Plan extends Entity<PlanDTO> {
         return this.props.isPaid;
     }
 
+    get tier() {
+        return this.props.tier;
+    }
+
     get billingCycle() {
         return this.props.billingCycle;
     }
@@ -89,6 +93,7 @@ export class Plan extends Entity<PlanDTO> {
         const subscriptionOrError = SubscriptionEntityFactory.create({
             planId: this.getId(),
             userId: subscriber.getId(),
+            tier: this.tier,
             price: this.price,
             startDate: now,
             lastPayment: now,
