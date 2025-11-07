@@ -46,6 +46,7 @@ export type PgPlanDTO = PgModelId & {
     name: string;
     price: number;
     is_paid: boolean;
+    tier: number;
     billing_cycle: "monthly" | "quarterly" | "annual";
     max_projects: number;
     events_month: number;
@@ -66,7 +67,7 @@ export type PgSubscriptionDTO = PgModelId & {
     payment_method: PaymentMethods;
     last_payment: Date;
     next_payment: Date | null;
-} & Pick<PgPlanDTO, "price" | "max_projects" | "events_month" | "retention" | "replay_events" | "support">;
+} & Pick<PgPlanDTO, "price" | "tier" | "max_projects" | "events_month" | "retention" | "replay_events" | "support">;
 
 export type PgParameterDTO = PgModelId & {
     key: string;
