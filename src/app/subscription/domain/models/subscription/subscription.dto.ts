@@ -6,6 +6,7 @@ import { z } from "@/infra/libs/zod";
 export const SubscriptionSchema = z.object({
     userId: z.uuid(),
     planId: z.uuid(),
+    tier: z.coerce.number().int().nonnegative(),
     price: z.coerce.number().nonnegative(),
     startDate: z.coerce.date().default(() => new Date()),
     endDate: z.coerce.date().nullish().default(null),

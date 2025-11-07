@@ -30,6 +30,10 @@ export class Subscription extends Entity<SubscriptionDTO> {
         return this.props.planId;
     }
 
+    get tier() {
+        return this.props.tier;
+    }
+
     get price() {
         return this.props.price;
     }
@@ -72,6 +76,10 @@ export class Subscription extends Entity<SubscriptionDTO> {
 
     get support() {
         return this.props.support;
+    }
+
+    finish() {
+        this.props.endDate = new Date();
     }
 
     checkConsumption(
