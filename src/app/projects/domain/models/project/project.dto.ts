@@ -6,7 +6,7 @@ import { z } from "@/infra/libs/zod";
 // TODO: alterar uuid do owner p/ v7
 export const ProjectSchema = z.object({
     owner: z.uuid(),
-    name: z.string(),
+    name: z.string().min(1),
     description: z.string().nullish().default(null),
     slug: z
         .string()
@@ -15,6 +15,7 @@ export const ProjectSchema = z.object({
     createdAt: z.coerce.date().default(() => new Date()),
     isActive: z.coerce.boolean().default(true),
     members: z.array(z.uuid()).default([]),
+    sourceSubscription: z.uuid(),
 });
 
 type Schema = typeof ProjectSchema;
