@@ -13,7 +13,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
                 id: { columnName: "id", type: "string" },
                 projectId: { columnName: "project_id", type: "string" },
                 receivedFrom: { columnName: "received_from", type: "string" },
-                receivedAt: { columnName: "reveived_at", type: "date" },
+                receivedAt: { columnName: "received_at", type: "date" },
                 headers: { columnName: "headers", type: "string" },
                 body: { columnName: "body", type: "string" },
                 query: { columnName: "query", type: "string" },
@@ -22,6 +22,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
                 replayedAt: { columnName: "replayed_at", type: "date" },
                 replayStatus: { columnName: "replay_status", type: "string" },
                 targetUrl: { columnName: "target_url", type: "string" },
+                sourceSubscription: { columnName: "source_subscription", type: "string" },
             },
         };
     }
@@ -40,6 +41,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
             replayedAt: persistence.replayed_at,
             replayStatus: persistence.replay_status,
             targetUrl: persistence.target_url,
+            sourceSubscription: persistence.source_subscription,
         });
     }
 
@@ -57,6 +59,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
             replayed_at: entity.replayedAt,
             replay_status: entity.replayStatus,
             target_url: entity.targetUrl,
+            source_subscription: entity.sourceSubscription,
         };
     }
 }

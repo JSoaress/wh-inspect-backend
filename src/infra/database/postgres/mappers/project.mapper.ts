@@ -20,6 +20,7 @@ export class ProjectPgMapper implements IDbMapper<ProjectDTO, PgProjectDTO> {
                 isActive: { columnName: "is_active", type: "boolean" },
                 members: { columnName: "members", type: "string" },
                 owner: { columnName: "owner", type: "string" },
+                sourceSubscription: { columnName: "source_subscription", type: "string" },
             },
         };
     }
@@ -34,6 +35,7 @@ export class ProjectPgMapper implements IDbMapper<ProjectDTO, PgProjectDTO> {
             isActive: persistence.is_active,
             members: persistence.members.split(","),
             owner: persistence.owner,
+            sourceSubscription: persistence.source_subscription,
         });
     }
 
@@ -47,6 +49,7 @@ export class ProjectPgMapper implements IDbMapper<ProjectDTO, PgProjectDTO> {
             is_active: entity.isActive,
             members: entity.members.join(","),
             owner: entity.owner,
+            source_subscription: entity.sourceSubscription,
         };
     }
 }

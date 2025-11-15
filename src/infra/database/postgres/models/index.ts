@@ -26,6 +26,7 @@ export type PgProjectDTO = PgModelId & {
     is_active: boolean;
     members: string;
     owner: string;
+    source_subscription: string;
 };
 
 export type PgWebhookLogDTO = PgModelId & {
@@ -40,6 +41,7 @@ export type PgWebhookLogDTO = PgModelId & {
     replayed_at: Date | null;
     replay_status: "success" | "fail" | null;
     target_url: string | null;
+    source_subscription: string;
 };
 
 export type PgPlanDTO = PgModelId & {
