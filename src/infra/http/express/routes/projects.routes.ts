@@ -1,3 +1,4 @@
+import { QueryOptions } from "ts-arch-kit/dist/database";
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
 import { ExpressRouter } from "../express-router";
@@ -51,6 +52,18 @@ projectsRoutes.register({
     },
     useCase(factory) {
         return factory.manageProjectMembersUseCase();
+    },
+});
+projectsRoutes.register({
+    method: "get",
+    path: "/:project/webhooks/simplified",
+    buildInput(req) {
+        const { project: projectId } = req.params;
+        const queryOptions: QueryOptions = { sort: [{ column: "receivedAt", order: "desc" }] };
+        return { projectId, queryOptions };
+    },
+    useCase(factory) {
+        return factory.fetchSimplifiedWebhooksUseCase();
     },
 });
 
