@@ -152,3 +152,9 @@ export class SystemParameterNotConfiguredError extends BasicError {
         super(`O parâmetro de sistema "${key}" não foi configurado.`, false);
     }
 }
+
+export class UserHasNoActiveSubscriptionError extends BasicError {
+    constructor() {
+        super("Você não possui uma assinatura ativa.", true);
+    }
+}
