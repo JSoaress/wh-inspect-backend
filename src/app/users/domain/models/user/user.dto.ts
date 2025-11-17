@@ -1,5 +1,5 @@
 import { RequireOnly } from "ts-arch-kit/dist/core/helpers";
-import { AbstractModelProps } from "ts-arch-kit/dist/core/models";
+import { AbstractModelProps, PrimaryKey } from "ts-arch-kit/dist/core/models";
 
 import { z } from "@/infra/libs/zod";
 
@@ -27,3 +27,7 @@ export type UserDTO = AbstractModelProps & Omit<z.output<Schema>, "password"> & 
 export type CreateUserDTO = Omit<z.input<Schema>, "cliToken" | "userToken" | "createdAt" | "isActive">;
 
 export type RestoreUserDTO = RequireOnly<UserDTO, "id">;
+
+export type AuthenticatedUserDTO = RestoreUserDTO & {
+    currentSubscriptionId: PrimaryKey;
+};
