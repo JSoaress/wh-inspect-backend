@@ -24,7 +24,11 @@ export class CreateProjectUseCase extends UseCase<CreateProjectUseCaseInput, Cre
 
     protected async impl({ requestUser, ...input }: CreateProjectUseCaseInput): Promise<CreateProjectUseCaseOutput> {
         return this.unitOfWork.execute<CreateProjectUseCaseOutput>(async () => {
-            const projectOrError = ProjectEntityFactory.create({ ...input, owner: requestUser.getId() });
+            const projectOrError = ProjectEntityFactory.create({
+                ...input,
+                sourceSubscription: `${requestUser.currentSubscriptionId}`,
+                owner: `${requestUser.id}`,
+            });
             if (projectOrError.isLeft()) return left(projectOrError.value);
             const projectCreated = projectOrError.value;
             const slugInUse = await this.projectRepository.exists({

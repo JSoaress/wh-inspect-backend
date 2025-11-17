@@ -24,7 +24,12 @@ export class ExpressHttpServer {
             const url = [this.baseUrl, ...path.split("/").filter(Boolean)].join("/");
             if (env.NODE_ENV !== "production") console.log(`[${method.toUpperCase()}] ${url}`);
             const pipeline: express.RequestHandler[] = [];
-            if (auth) pipeline.push(middlewares.authorization(this.useCaseFactory.checkAuthenticatedUserUseCase()));
+            if (auth)
+                pipeline.push(
+                    middlewares.authorization(
+                        this.useCaseFactory.authenticatedUserDecorator(this.useCaseFactory.checkAuthenticatedUserUseCase())
+                    )
+                );
             if (routeMiddlewares) pipeline.push(...routeMiddlewares(this.useCaseFactory));
             pipeline.push(this.buildHandler(route), middlewares.formatRespose);
             this.app[method](url, ...pipeline);

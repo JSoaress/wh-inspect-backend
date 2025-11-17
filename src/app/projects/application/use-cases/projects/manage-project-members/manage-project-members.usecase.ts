@@ -33,9 +33,8 @@ export class ManageProjectMembersUseCase extends UseCase<
         operations,
         requestUser,
     }: ManageProjectMembersUseCaseInput): Promise<ManageProjectMembersUseCaseOutput> {
-        // if(!Array.isArray(operations))
         return this.unitOfWork.execute<ManageProjectMembersUseCaseOutput>(async () => {
-            const project = await this.projectRepository.findOne({ filter: { id, owner: requestUser.getId() } });
+            const project = await this.projectRepository.findOne({ filter: { id, owner: `${requestUser.id}` } });
             if (!project) return left(new NotFoundModelError("Project", id));
             const updatedMembers: string[] = project.members.filter(
                 (m) =>

@@ -3,7 +3,7 @@ import { QueryOptions } from "ts-arch-kit/dist/database";
 
 import { NotFoundModelError, Pagination } from "@/app/_common";
 import { SimplifiedWebhook } from "@/app/projects/domain/models/webhook";
-import { User } from "@/app/users/domain/models/user";
+import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
 
 export type FetchSimplifiedWebhooksUseCaseGateway = {
@@ -13,7 +13,7 @@ export type FetchSimplifiedWebhooksUseCaseGateway = {
 export type FetchSimplifiedWebhooksUseCaseInput = {
     projectId: string;
     queryOptions: QueryOptions;
-    requestUser: User;
+    requestUser: AuthenticatedUserDTO;
 };
 
 export type FetchSimplifiedWebhooksUseCaseOutput = Either<NotFoundModelError, Pagination<SimplifiedWebhook>>;

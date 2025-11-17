@@ -29,7 +29,7 @@ export class SubscribePlanUseCase extends UseCase<SubscribePlanUseCaseInput, Sub
             const plan = await this.planRepository.findById(input.selectedPlanId);
             if (!plan) return left(new NotFoundModelError(Plan.name, input.selectedPlanId));
             const currentSubscription = await this.subscriptionRepository.findOne({
-                filter: { userId: requestUser.getId(), endDate: { $isNull: true } },
+                filter: { userId: `${requestUser.id}`, endDate: { $isNull: true } },
             });
             if (currentSubscription) {
                 currentSubscription.finish();

@@ -30,12 +30,13 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
     protected async impl({ requestUser, ...input }: ReceiveWebhookUseCaseInput): Promise<ReceiveWebhookUseCaseOutput> {
         const result = await this.unitOfWork.execute<ReceiveWebhookUseCaseOutput>(async () => {
             const project = await this.projectRepository.findOne({ filter: { slug: input.projectSlug } });
-            if (!project || !project.members.includes(requestUser.getId()))
+            if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", { slug: input.projectSlug }));
             const webhookLogOrError = WebHookLogEntityFactory.create({
                 ...input,
                 projectId: `${project.id}`,
                 receivedAt: new Date(),
+                sourceSubscription: `${requestUser.currentSubscriptionId}`,
             });
             if (webhookLogOrError.isLeft()) return left(webhookLogOrError.value);
             const createdWebhookLog = webhookLogOrError.value;

@@ -36,12 +36,13 @@ export class ReplayWebhookUseCase extends UseCase<ReplayWebhookUseCaseInput, Rep
             const webhookLog = await this.webhookLogRepository.findById(webhookLogId);
             if (!webhookLog) return left(new NotFoundModelError("WebhookLog", webhookLogId));
             const project = await this.projectRepository.findOne({ filter: { id: webhookLog.projectId } });
-            if (!project || !project.members.includes(requestUser.getId()))
+            if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", webhookLog.projectId));
             const webhookLogOrError = WebHookLogEntityFactory.create({
                 ...webhookLog,
                 headers: { ...webhookLog.headers, ...input.headers },
                 body: { ...webhookLog.body, ...input.body },
+                sourceSubscription: `${requestUser.currentSubscriptionId}`,
                 replayedFrom: `${webhookLogId}`,
                 replayedAt: new Date(),
                 replayStatus: "success",

@@ -31,7 +31,7 @@ export class ForwardWebhookUseCase extends UseCase<ForwardWebhookUseCaseInput, F
             const webhookLog = await this.webhookLogRepository.findById(webhookLogId);
             if (!webhookLog) return left(new NotFoundModelError("WebhookLog", webhookLogId));
             const project = await this.projectRepository.findOne({ filter: { id: webhookLog.projectId } });
-            if (!project || !project.members.includes(requestUser.getId()))
+            if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", webhookLog.projectId));
             this.ws.broadcast(requestUser.cliToken, webhookLog);
             return right(undefined);

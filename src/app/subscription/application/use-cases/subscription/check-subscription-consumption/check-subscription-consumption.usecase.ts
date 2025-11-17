@@ -28,7 +28,7 @@ export class CheckSubscriptionConsumptionUseCase extends UseCase<
         return this.unitOfWork.execute<CheckSubscriptionConsumptionUseCaseOutput>(async () => {
             const { action, requestUser } = input;
             const subscription = await this.subscriptionRepository.findOne({
-                filter: { userId: requestUser.getId(), endDate: { $isNull: true } },
+                filter: { userId: `${requestUser.id}`, endDate: { $isNull: true } },
             });
             if (!subscription) return left(new NoSubscriptionPlanError());
             const consumption = await this.subscriptionRepository.getConsumptionByUser(requestUser);

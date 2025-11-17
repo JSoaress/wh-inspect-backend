@@ -24,7 +24,7 @@ export class UpdateProjectUseCase extends UseCase<UpdateProjectUseCaseInput, Upd
 
     protected async impl({ requestUser, id, ...input }: UpdateProjectUseCaseInput): Promise<UpdateProjectUseCaseOutput> {
         return this.unitOfWork.execute<UpdateProjectUseCaseOutput>(async () => {
-            const project = await this.projectRepository.findOne({ filter: { id, owner: requestUser.getId() } });
+            const project = await this.projectRepository.findOne({ filter: { id, owner: `${requestUser.id}` } });
             if (!project) return left(new NotFoundModelError("Project", id));
             const updateOrError = ProjectEntityFactory.update(project, input);
             if (updateOrError.isLeft()) return left(updateOrError.value);

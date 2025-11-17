@@ -25,7 +25,7 @@ export class DeleteProjectUseCase extends UseCase<DeleteProjectUseCaseInput, Del
 
     protected async impl({ id, requestUser }: DeleteProjectUseCaseInput): Promise<DeleteProjectUseCaseOutput> {
         return this.unitOfWork.execute<DeleteProjectUseCaseOutput>(async () => {
-            const project = await this.projectRepository.findOne({ filter: { id, owner: requestUser.getId() } });
+            const project = await this.projectRepository.findOne({ filter: { id, owner: `${requestUser.id}` } });
             if (!project) return left(new NotFoundModelError("Project", id));
             await this.webhookRepository.destroyByProject(project);
             await this.projectRepository.destroy(project);

@@ -30,7 +30,7 @@ export class FetchSimplifiedWebhooksUseCase extends UseCase<
         return this.unitOfWork.execute<FetchSimplifiedWebhooksUseCaseOutput>(async () => {
             const { queryOptions, requestUser, projectId } = input;
             const project = await this.projectRepository.findById(projectId);
-            if (!project || !project.members.includes(requestUser.getId()))
+            if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", projectId));
             const { filter = {}, ...qo } = queryOptions;
             filter.projectId = projectId;

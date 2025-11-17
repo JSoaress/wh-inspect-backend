@@ -1,7 +1,7 @@
 import { Either } from "ts-arch-kit/dist/core/helpers";
 
 import { InvalidCredentialsError, InvalidPasswordError, InvalidTokenError, InvalidUserError } from "@/app/_common";
-import { User } from "@/app/users/domain/models/user";
+import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
 
 export type ChangePasswordUseCaseGateway = {
@@ -11,7 +11,7 @@ export type ChangePasswordUseCaseGateway = {
 export type ChangePasswordUseCaseInput = {
     currentPassword: string;
     newPassword: string;
-    requestUser: User;
+    requestUser: AuthenticatedUserDTO;
 };
 
 export type ChangePasswordUseCaseOutput = Either<

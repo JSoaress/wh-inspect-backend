@@ -1,7 +1,7 @@
 import { Either } from "ts-arch-kit/dist/core/helpers";
 
 import { InvalidSubscriptionActionError, NoSubscriptionPlanError, PlanLimitReachedError } from "@/app/_common";
-import { User } from "@/app/users/domain/models/user";
+import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
 
 export type CheckSubscriptionConsumptionUseCaseGateway = {
@@ -10,7 +10,7 @@ export type CheckSubscriptionConsumptionUseCaseGateway = {
 
 export type CheckSubscriptionConsumptionUseCaseInput = {
     action: string;
-    requestUser: User;
+    requestUser: AuthenticatedUserDTO;
 };
 
 export type CheckSubscriptionConsumptionUseCaseOutput = Either<

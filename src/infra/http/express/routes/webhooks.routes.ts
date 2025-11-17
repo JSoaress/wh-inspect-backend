@@ -11,7 +11,7 @@ webhooksRoutes.register({
     auth: false,
     middlewares(factory) {
         return [
-            authorizationBasedUser(factory.getUserUseCase()),
+            authorizationBasedUser(factory.authenticatedUserDecorator(factory.getUserUseCase())),
             checkPlanLimit("receive-event", factory.checkSubscriptionConsumption()),
         ];
     },
