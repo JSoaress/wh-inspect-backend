@@ -15,6 +15,7 @@ import { UpdatePlanUseCase } from "@/app/subscription/application/use-cases/plan
 import { CheckSubscriptionConsumptionUseCase } from "@/app/subscription/application/use-cases/subscription/check-subscription-consumption";
 import { ActivateUserUseCase } from "@/app/users/application/use-cases/users/activate-user";
 import { AuthenticateUserUseCase } from "@/app/users/application/use-cases/users/authenticate-user";
+import { AuthenticatedUserDecorator } from "@/app/users/application/use-cases/users/authenticated-user-decorator";
 import { ChangePasswordUseCase } from "@/app/users/application/use-cases/users/change-password";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { CreateUserUseCase } from "@/app/users/application/use-cases/users/create-user";
@@ -48,6 +49,10 @@ export class UseCaseFactory {
 
     checkAuthenticatedUserUseCase() {
         return new CheckAuthenticatedUserUseCase({ repositoryFactory: this.repositoryFactory, jwt: this.jwt });
+    }
+
+    authenticatedUserDecorator(useCase: CheckAuthenticatedUserUseCase | GetUserUseCase) {
+        return new AuthenticatedUserDecorator({ repositoryFactory: this.repositoryFactory, useCase });
     }
 
     getUserUseCase() {
