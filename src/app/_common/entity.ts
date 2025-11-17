@@ -17,4 +17,8 @@ export abstract class Entity<T extends AbstractModelProps> extends AbstractModel
             if (value !== undefined && !ignore.includes(key) && this.props[key] !== value) this.props[key] = value;
         });
     }
+
+    toDto(): T {
+        return { ...this.props };
+    }
 }
