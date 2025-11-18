@@ -17,6 +17,7 @@ import { ActivateUserUseCase } from "@/app/users/application/use-cases/users/act
 import { AuthenticateUserUseCase } from "@/app/users/application/use-cases/users/authenticate-user";
 import { AuthenticatedUserDecorator } from "@/app/users/application/use-cases/users/authenticated-user-decorator";
 import { ChangePasswordUseCase } from "@/app/users/application/use-cases/users/change-password";
+import { ChangeUserCliTokenUseCase } from "@/app/users/application/use-cases/users/change-user-cli-token";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { CreateUserUseCase } from "@/app/users/application/use-cases/users/create-user";
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
@@ -135,5 +136,9 @@ export class UseCaseFactory {
 
     resetPasswordUseCase() {
         return new ResetPasswordUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    changeUserCliTokenUseCase() {
+        return new ChangeUserCliTokenUseCase({ repositoryFactory: this.repositoryFactory, ws: this.ws });
     }
 }
