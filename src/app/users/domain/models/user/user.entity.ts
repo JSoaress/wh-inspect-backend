@@ -73,6 +73,13 @@ export class User extends Entity<UserDTO> {
         return this.props.isActive;
     }
 
+    generateCliToken(): Either<InvalidUserError, string> {
+        if (!this.isActive) return left(new InvalidUserError());
+        const token = User.generateToken("cli");
+        this.props.cliToken = token;
+        return right(token);
+    }
+
     async verifyPassword(plainPassword: string): Promise<Either<InvalidUserError, boolean>> {
         if (!this.isActive) return left(new InvalidUserError());
         const matchPassword = await this.props.password.verify(plainPassword);
