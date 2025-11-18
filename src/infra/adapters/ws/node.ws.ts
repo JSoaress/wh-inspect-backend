@@ -56,4 +56,12 @@ export class SimpleWebSocket implements IWebSocket {
             if (ws.readyState === WebSocket.OPEN) ws.send(data);
         });
     }
+
+    close(userCliToken: string): void {
+        const conns = this.clients.get(userCliToken);
+        if (!conns) return;
+        conns.forEach((ws) => {
+            ws.close(1000);
+        });
+    }
 }
