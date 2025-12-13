@@ -1,6 +1,7 @@
 import { parseNumber } from "ts-arch-kit/dist/core/helpers";
+import { PrimaryKey } from "ts-arch-kit/dist/core/models";
 
-import { ISubscriptionRepository } from "@/app/subscription/application/repos";
+import { ISubscriptionRepository, SubscriptionsCovered } from "@/app/subscription/application/repos";
 import { Subscription, SubscriptionConsumptionDTO } from "@/app/subscription/domain/models/subscription";
 import { User } from "@/app/users/domain/models/user";
 
@@ -37,5 +38,16 @@ export class SubscriptionPgRepository
             projects: parseNumber(rowProject.count),
             eventsThisMonth: parseNumber(rowEvents.count),
         };
+    }
+
+    async getSubscriptionsCoveredBy(userId: PrimaryKey, subscriptionId: PrimaryKey): Promise<SubscriptionsCovered[]> {
+        const trx = this.getTransaction();
+        const sql1 = `SELECT id, tier FROM ${this.tableName} WHERE id = $1`;
+        const {
+            rows: [currentSubscription],
+        } = await trx.query(sql1, [subscriptionId]);
+        const sql2 = `SELECT s.id FROM ${this.tableName} s WHERE s.user_id = $1 AND s.tier <= $2`;
+        const { rows } = await trx.query(sql2, [userId, currentSubscription.tier]);
+        return rows.map((row) => ({ id: row.id }));
     }
 }
