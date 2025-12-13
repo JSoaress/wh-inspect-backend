@@ -15,6 +15,7 @@ export function errorHandler(err: Error | BasicError, req: Request, res: Respons
         // 401
         case appErrors.InvalidTokenError:
         case appErrors.InvalidCredentialsError:
+        case appErrors.PasswordDoNotMatchError:
             return res.status(HttpStatusCodes.UNAUTHORIZED).json(err);
         // 403
         case appErrors.ForbiddenError:
@@ -27,9 +28,15 @@ export function errorHandler(err: Error | BasicError, req: Request, res: Respons
         case appErrors.EmailTakenError:
         case appErrors.InvalidUserError:
         case appErrors.ConflictError:
+        case appErrors.UsernameTakenError:
+        case appErrors.InvalidSubscriptionActionError:
+        case appErrors.NoSubscriptionPlanError:
+        case appErrors.PlanLimitReachedError:
+        case appErrors.UserHasNoActiveSubscriptionError:
             return res.status(HttpStatusCodes.CONFLICT).json(err);
         // 422
         case appErrors.ValidationError:
+        case appErrors.InvalidPasswordError:
             return res.status(HttpStatusCodes.UNPROCESSABLE_ENTITY).json(err);
         // 500
         default:
