@@ -12,7 +12,7 @@ export const WebHookLogSchema = z.object({
     body: z.record(z.string(), z.any()),
     query: z.record(z.string(), z.any()).nullish().default(null),
     statusCodeSent: z.coerce.number().int().nonnegative(),
-    replayedFrom: z.uuid().nullish().default(null),
+    replayedFrom: z.string().nullish().default(null),
     replayedAt: z.coerce.date().nullish().default(null),
     replayStatus: z.enum(["success", "fail"]).nullish().default(null),
     targetUrl: z.coerce.string().nullish().default(null),
