@@ -47,7 +47,7 @@ export class SendEmailForPasswordRecoveryUseCase extends UseCase<
                     variables: {
                         platform: env.PLATFORM_NAME,
                         name: user.name,
-                        recoveryLink: `${env.WEB_URL}password-recovery/${user.userToken}`,
+                        recoveryLink: `${env.WEB_URL}password-recovery/change-password/${user.userToken}`,
                         year: new Date().getFullYear(),
                     },
                 },
