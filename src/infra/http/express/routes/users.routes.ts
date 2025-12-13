@@ -28,5 +28,13 @@ userRoutes.register({
         return factory.changePasswordUseCase();
     },
 });
+userRoutes.register({
+    method: "put",
+    path: "/change-cli-token",
+    auth: true,
+    useCase(factory) {
+        return factory.changeUserCliTokenUseCase();
+    },
+});
 
 export { userRoutes };
