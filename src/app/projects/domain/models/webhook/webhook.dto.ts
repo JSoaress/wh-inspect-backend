@@ -25,6 +25,6 @@ export type WebHookLogDTO = Required<AbstractModelProps> & z.output<Schema>;
 
 export type CreateWebHookLogDTO = z.input<Schema>;
 
-export type SimplifiedWebhook = Pick<WebHookLogDTO, "id" | "receivedFrom" | "receivedAt"> & {
+export type SimplifiedWebhook = Pick<WebHookLogDTO, "id" | "receivedFrom" | "receivedAt" | "replayedAt"> & {
     project: Pick<ProjectDTO, "id" | "name">;
 };
