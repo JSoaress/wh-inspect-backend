@@ -37,6 +37,7 @@ projectsRoutes.register({
 projectsRoutes.register({
     method: "delete",
     path: "/:project",
+    statusCode: HttpStatusCodes.NO_CONTENT,
     buildInput(req) {
         return { id: req.params.project };
     },
