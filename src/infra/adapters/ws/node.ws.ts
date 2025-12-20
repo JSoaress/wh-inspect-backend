@@ -24,6 +24,7 @@ export class SimpleWebSocket implements IWebSocket {
         server.on("upgrade", (req, socket, head) => {
             this.wss.handleUpgrade(req, socket, head, async (ws) => {
                 const url = new URL(req.url ?? "", `http://${req.headers.host}`);
+                const client = url.searchParams.get("client") || "cli";
                 const cliToken = url.searchParams.get("token");
                 if (!cliToken) {
                     ws.close(1008, "Token ausente");
@@ -36,20 +37,21 @@ export class SimpleWebSocket implements IWebSocket {
                     return;
                 }
                 const user = userOrError.value;
-                if (!this.clients.has(cliToken)) this.clients.set(cliToken, new Set());
-                this.clients.get(cliToken)?.add(ws);
-                console.log(`🔗 Usuário ${user.username} conectado`);
+                const connectionKey = `${client}:${cliToken}`;
+                if (!this.clients.has(connectionKey)) this.clients.set(connectionKey, new Set());
+                this.clients.get(connectionKey)?.add(ws);
+                console.log(`🔗 Usuário ${user.username} conectado | ${client}`);
                 ws.on("close", () => {
-                    this.clients.get(cliToken)?.delete(ws);
-                    console.log(`❌ Usuário ${user.username} desconectado`);
+                    this.clients.get(connectionKey)?.delete(ws);
+                    console.log(`❌ Usuário ${user.username} desconectado | ${client}`);
                 });
             });
         });
         console.log("✅ WebSocket pronto para conexões");
     }
 
-    broadcast(userCliToken: string, message: any): void {
-        const conns = this.clients.get(userCliToken);
+    broadcast(client: "front" | "cli", userToken: string, message: any): void {
+        const conns = this.clients.get(`${client}:${userToken}`);
         if (!conns) return;
         const data = JSON.stringify(message);
         conns.forEach((ws) => {
