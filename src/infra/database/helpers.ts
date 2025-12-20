@@ -1,6 +1,10 @@
 import { AbstractModelProps } from "ts-arch-kit/dist/core/models";
 import { ISetUnitOfWork, IRepository as IBaseRepository, FilterOperators } from "ts-arch-kit/dist/database";
 
+import { select } from "@rusdidev/pg-query-builder";
+
+export type SelectQueryBuilder = ReturnType<typeof select>;
+
 export interface IRepository<T extends AbstractModelProps, W = Record<string, unknown>>
     extends ISetUnitOfWork,
         IBaseRepository<T, W> {}

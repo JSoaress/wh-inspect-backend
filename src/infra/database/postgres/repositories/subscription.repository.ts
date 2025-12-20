@@ -19,10 +19,9 @@ export class SubscriptionPgRepository
 
     async getConsumptionByUser(user: User): Promise<SubscriptionConsumptionDTO> {
         const queryProjects = "SELECT count(id) FROM projects WHERE owner = $1";
-        const trx = this.getTransaction();
         const {
             rows: [rowProject],
-        } = await trx.query(queryProjects, [user.getId()]);
+        } = await this.query(queryProjects, [user.getId()]);
         const now = new Date();
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
@@ -33,7 +32,7 @@ export class SubscriptionPgRepository
         WHERE p."owner" = $1 AND w.received_at BETWEEN $2 AND $3;`;
         const {
             rows: [rowEvents],
-        } = await trx.query(queryEvents, [user.getId(), startDate, endDate]);
+        } = await this.query(queryEvents, [user.getId(), startDate, endDate]);
         return {
             projects: parseNumber(rowProject.count),
             eventsThisMonth: parseNumber(rowEvents.count),
@@ -41,13 +40,12 @@ export class SubscriptionPgRepository
     }
 
     async getSubscriptionsCoveredBy(userId: PrimaryKey, subscriptionId: PrimaryKey): Promise<SubscriptionsCovered[]> {
-        const trx = this.getTransaction();
         const sql1 = `SELECT id, tier FROM ${this.tableName} WHERE id = $1`;
         const {
             rows: [currentSubscription],
-        } = await trx.query(sql1, [subscriptionId]);
+        } = await this.query(sql1, [subscriptionId]);
         const sql2 = `SELECT s.id FROM ${this.tableName} s WHERE s.user_id = $1 AND s.tier <= $2`;
-        const { rows } = await trx.query(sql2, [userId, currentSubscription.tier]);
+        const { rows } = await this.query(sql2, [userId, currentSubscription.tier]);
         return rows.map((row) => ({ id: row.id }));
     }
 }

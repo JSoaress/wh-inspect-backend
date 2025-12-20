@@ -3,6 +3,7 @@ import { QueryOptions } from "ts-arch-kit/dist/database";
 import { IWebhookLogRepository } from "@/app/projects/application/repos";
 import { ProjectDTO } from "@/app/projects/domain/models/project";
 import { SimplifiedWebhook, WebHookLogDTO } from "@/app/projects/domain/models/webhook";
+import { select } from "@rusdidev/pg-query-builder";
 
 import { DbColumns, DbFilterOptions } from "../../helpers";
 import { WebhookLogPgMapper } from "../mappers";
@@ -19,8 +20,7 @@ export class WebhookLogPgRepository
 
     async destroyByProject(project: ProjectDTO): Promise<void> {
         const query = `DELETE FROM ${this.tableName} WHERE project_id = $1;`;
-        const trx = this.getTransaction();
-        await trx.query(query, [project.id]);
+        await this.query(query, [project.id]);
     }
 
     async findSimplified(queryOptions?: QueryOptions): Promise<SimplifiedWebhook[]> {
@@ -29,15 +29,20 @@ export class WebhookLogPgRepository
             columns[k] = { ...v, columnName: `w.${v.columnName}` };
         });
         const filterOptions: DbFilterOptions = { ...this.mapper.filterOptions, columns };
-        const sql = `SELECT w.id, w.project_id, p.name, w.received_from, w.received_at
-            FROM ${this.tableName} w
-            INNER JOIN projects p ON p.id = w.project_id`;
-        const where = this.filter(filterOptions, queryOptions?.filter);
-        const sort = this.sort(columns, queryOptions?.sort);
-        const pagination = this.pagination(queryOptions?.pagination);
-        const query = this.prepareStmt([sql, where, sort, pagination]);
-        const trx = this.getTransaction();
-        const { rows } = await trx.query(query);
+        const stmt = select({ table: this.tableName, alias: "w" })
+            .addSelectItems("w.id", "w.project_id", "p.name", "w.received_from", "w.received_at", "w.replayed_at")
+            .addJoinTarget({
+                joinType: "JOIN",
+                targetTable: "projects",
+                alias: "p",
+                targetColumn: "id",
+                previousColumn: "project_id",
+            });
+        this.filter(stmt, filterOptions, queryOptions?.filter);
+        this.sort(stmt, columns, queryOptions?.sort);
+        this.pagination(stmt, queryOptions?.pagination);
+        const [query, values] = stmt.compile();
+        const { rows } = await this.query(query, values);
         return rows.map((r) => ({
             id: r.id,
             project: {
@@ -46,6 +51,7 @@ export class WebhookLogPgRepository
             },
             receivedFrom: r.received_from,
             receivedAt: r.received_at,
+            replayedAt: r.replayed_at,
         }));
     }
 }
