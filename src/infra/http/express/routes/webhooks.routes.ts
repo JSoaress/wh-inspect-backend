@@ -45,5 +45,12 @@ webhooksRoutes.register({
         return factory.replayWebhookUseCase();
     },
 });
+webhooksRoutes.register({
+    method: "get",
+    path: "/metrics",
+    useCase(factory) {
+        return factory.getWebhookMetrics();
+    },
+});
 
 export { webhooksRoutes };
