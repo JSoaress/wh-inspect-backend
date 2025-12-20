@@ -52,5 +52,15 @@ webhooksRoutes.register({
         return factory.getWebhookMetrics();
     },
 });
+webhooksRoutes.register({
+    method: "get",
+    path: "/:webhook",
+    buildInput(req) {
+        return { queryOptions: { filter: { id: req.params.webhook } } };
+    },
+    useCase(factory) {
+        return factory.getWebhookUseCase();
+    },
+});
 
 export { webhooksRoutes };
