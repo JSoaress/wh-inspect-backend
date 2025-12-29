@@ -2,6 +2,7 @@ import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { InvalidCredentialsError, UseCase } from "@/app/_common";
+import { User } from "@/app/users/domain/models/user";
 
 import { IUserRepository } from "../../../repos";
 import {
@@ -24,12 +25,13 @@ export class ChangePasswordUseCase extends UseCase<ChangePasswordUseCaseInput, C
     protected async impl(input: ChangePasswordUseCaseInput): Promise<ChangePasswordUseCaseOutput> {
         return this.unitOfWork.execute<ChangePasswordUseCaseOutput>(async () => {
             const { currentPassword, newPassword, requestUser } = input;
-            const matchPasswordOrError = await requestUser.verifyPassword(currentPassword);
+            const user = User.restore(requestUser);
+            const matchPasswordOrError = await user.verifyPassword(currentPassword);
             if (matchPasswordOrError.isLeft()) return left(matchPasswordOrError.value);
             if (!matchPasswordOrError.value) return left(new InvalidCredentialsError());
-            const setPasswordOrError = await requestUser.setPassword(newPassword);
+            const setPasswordOrError = await user.setPassword(newPassword);
             if (setPasswordOrError.isLeft()) return left(setPasswordOrError.value);
-            await this.userRepository.save(requestUser);
+            await this.userRepository.save(user);
             return right(undefined);
         });
     }
