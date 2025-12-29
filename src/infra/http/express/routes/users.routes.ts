@@ -13,6 +13,14 @@ userRoutes.register({
     },
 });
 userRoutes.register({
+    method: "patch",
+    auth: true,
+    path: "/",
+    useCase(factory) {
+        return factory.updateUserUseCase();
+    },
+});
+userRoutes.register({
     method: "post",
     path: "/activate",
     statusCode: HttpStatusCodes.NO_CONTENT,
