@@ -5,7 +5,7 @@ import { Entity, InvalidPasswordError, InvalidTokenError, InvalidUserError, Vali
 import { ZodValidator } from "@/infra/libs/zod";
 
 import { Password } from "./password.vo";
-import { CreateUserDTO, RestoreUserDTO, UserDTO, UserSchema } from "./user.dto";
+import { CreateUserDTO, RestoreUserDTO, UpdateUserDTO, UserDTO, UserSchema } from "./user.dto";
 
 export class User extends Entity<UserDTO> {
     static async create(props: CreateUserDTO): Promise<Either<ValidationError, User>> {
@@ -35,6 +35,15 @@ export class User extends Entity<UserDTO> {
 
     private static generateToken(prefix: string): string {
         return `${prefix}_${randomBytes(24).toString("hex")}`;
+    }
+
+    update(input: UpdateUserDTO): Either<ValidationError, void> {
+        const validDataOrError = ZodValidator.validate({ ...this.props, ...input, updatedAt: new Date() }, UserSchema);
+        if (!validDataOrError.success) return left(new ValidationError(User.name, validDataOrError.errors));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...updatedProps } = validDataOrError.data;
+        this.updateObj(updatedProps, ["createdAt"]);
+        return right(undefined);
     }
 
     get name() {

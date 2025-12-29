@@ -26,6 +26,8 @@ export type UserDTO = AbstractModelProps & Omit<z.output<Schema>, "password"> & 
 
 export type CreateUserDTO = Omit<z.input<Schema>, "cliToken" | "userToken" | "createdAt" | "isActive">;
 
+export type UpdateUserDTO = Partial<Pick<CreateUserDTO, "name" | "isAdmin">>;
+
 export type RestoreUserDTO = RequireOnly<UserDTO, "id">;
 
 export type AuthenticatedUserDTO = RestoreUserDTO & {
