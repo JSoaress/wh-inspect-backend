@@ -51,7 +51,6 @@
         "vitest": "^3.0.6"
     },
     "dependencies": {
-        "@rusdidev/pg-query-builder": "^1.2.23",
         "bcrypt": "^6.0.0",
         "chance": "^1.1.13",
         "cors": "^2.8.5",

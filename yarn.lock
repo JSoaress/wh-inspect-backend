@@ -1025,11 +1025,6 @@
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
-"@rusdidev/pg-query-builder@^1.2.23":
-  version "1.2.23"
-  resolved "https://registry.yarnpkg.com/@rusdidev/pg-query-builder/-/pg-query-builder-1.2.23.tgz#c0c0e6a4d65aa24681a646edadc8c697a07858d7"
-  integrity sha512-+1uT30G4//t1VbyrLRu2Hs9yC0J4iyepP1xKQKzYRfW3eZHu13hBAdGD+uF5DgeU7FmNi78NXTU9T984RkTOtA==
-
 "@smithy/abort-controller@^4.0.5":
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/@smithy/abort-controller/-/abort-controller-4.0.5.tgz#2872a12d0f11dfdcc4254b39566d5f24ab26a4ab"
