@@ -1,7 +1,14 @@
 import { randomBytes } from "node:crypto";
 import { Either, left, right } from "ts-arch-kit/dist/core/helpers";
 
-import { Entity, InvalidPasswordError, InvalidTokenError, InvalidUserError, ValidationError } from "@/app/_common";
+import {
+    Entity,
+    InvalidCredentialsError,
+    InvalidPasswordError,
+    InvalidTokenError,
+    InvalidUserError,
+    ValidationError,
+} from "@/app/_common";
 import { ZodValidator } from "@/infra/libs/zod";
 
 import { Password } from "./password.vo";
@@ -89,10 +96,11 @@ export class User extends Entity<UserDTO> {
         return right(token);
     }
 
-    async verifyPassword(plainPassword: string): Promise<Either<InvalidUserError, boolean>> {
+    async verifyPassword(plainPassword: string): Promise<Either<InvalidUserError | InvalidCredentialsError, true>> {
         if (!this.isActive) return left(new InvalidUserError());
         const matchPassword = await this.props.password.verify(plainPassword);
-        return right(matchPassword);
+        if (!matchPassword) return left(new InvalidCredentialsError());
+        return right(true);
     }
 
     async setPassword(
