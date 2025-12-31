@@ -1,15 +1,22 @@
 import { AbstractModelProps } from "ts-arch-kit/dist/core/models";
-import { ISetUnitOfWork, IRepository as IBaseRepository, FilterOperators } from "ts-arch-kit/dist/database";
-
-import { select } from "@rusdidev/pg-query-builder";
-
-export type SelectQueryBuilder = ReturnType<typeof select>;
+import {
+    ISetUnitOfWork,
+    IRepository as IBaseRepository,
+    FilterOperators as BaseFilterOperators,
+} from "ts-arch-kit/dist/database";
 
 export interface IRepository<T extends AbstractModelProps, W = Record<string, unknown>>
     extends ISetUnitOfWork,
         IBaseRepository<T, W> {}
 
-export type DbColumnType = "string" | "number" | "boolean" | "date" | "hour";
+export type DbColumnType = "string" | "number" | "boolean" | "date" | "hour" | "json";
+
+export type FilterOperators<T> = BaseFilterOperators<T> & {
+    $jsonExists: T;
+    $jsonHasAll: T;
+    $jsonHasAny: T;
+    $jsonIn: T;
+};
 
 export type DbFilterableColumn = {
     columnName: string;

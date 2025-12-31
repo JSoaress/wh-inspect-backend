@@ -1,15 +1,52 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-classes-per-file */
 import isObject from "is-object";
-import { DatabaseFilter, DatabaseFilterOperatorParams, FilterOperators, Where } from "ts-arch-kit/dist/database";
+import { DatabaseFilter, DatabaseFilterOperatorParams, Where } from "ts-arch-kit/dist/database";
 
-import { DbFilterOptions, SelectQueryBuilder } from "../../helpers";
+import { DbFilterOptions, FilterOperators } from "../../helpers";
 
-export class PgWhereFilter extends DatabaseFilter<void> {
-    constructor(private stmt: SelectQueryBuilder, readonly filterOptions: DbFilterOptions) {
-        super();
+type SqlFragment = {
+    sql: string;
+    params: any[];
+};
+
+export class SqlWhereBuilder {
+    private clauses: string[] = [];
+    private params: unknown[] = [];
+
+    add(sql: string, params: unknown[] = []) {
+        this.clauses.push(sql);
+        this.params.push(...params);
     }
 
-    filter(filterOptions: DbFilterOptions, filter?: Where): void {
-        if (!filter) return;
+    build(): SqlFragment {
+        if (!this.clauses.length) {
+            return { sql: "", params: [] };
+        }
+
+        return {
+            sql: this.clauses.length ? this.normalizeParams(`WHERE ${this.clauses.join(" AND ")}`) : "",
+            params: this.params,
+        };
+    }
+
+    private normalizeParams(sql: string) {
+        let i = 0;
+        // eslint-disable-next-line no-plusplus
+        return sql.replace(/\?/g, () => `$${++i}`);
+    }
+}
+
+export class PgWhereFilter extends DatabaseFilter<void> {
+    private where: SqlWhereBuilder;
+
+    constructor() {
+        super();
+        this.where = new SqlWhereBuilder();
+    }
+
+    filter(filterOptions: DbFilterOptions, filter?: Where): SqlWhereBuilder | null {
+        if (!filter || !Object.keys(filter).length) return null;
         const { columns } = filterOptions;
         Object.entries<unknown | FilterOperators<unknown>>(filter).forEach(([field, value]) => {
             const { columnName } = columns[field];
@@ -33,69 +70,101 @@ export class PgWhereFilter extends DatabaseFilter<void> {
                 if (advancedFilter.$isNull) this.isNull({ columnName, value: advancedFilter.$isNull });
             }
         });
+        return this.where;
+    }
+
+    private add(sql: string, ...params: any[]) {
+        this.where.add(sql, params);
     }
 
     exact({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "eq", value });
+        this.add(`${columnName} = ?`, value);
     }
 
     iexact({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ilike", value });
+        this.add(`LOWER(${columnName}) = LOWER(?)`, value);
     }
 
     exclude({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ne", value });
+        this.add(`${columnName} <> ?`, value);
     }
 
     like({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "like", value: `%${value}%` });
+        this.add(`${columnName} LIKE ?`, `%${value}%`);
     }
 
     ilike({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ilike", value: `%${value}%` });
+        this.add(`${columnName} ILIKE ?`, `%${value}%`);
     }
 
     startWith({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ilike", value: `${value}%` });
+        this.add(`${columnName} ILIKE ?`, `${value}%`);
     }
 
     endWith({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ilike", value: `%${value}` });
+        this.add(`${columnName} ILIKE ?`, `%${value}`);
     }
 
     lt({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "lt", value });
+        this.add(`${columnName} < ?`, value);
     }
 
     lte({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "le", value });
+        this.add(`${columnName} <= ?`, value);
     }
 
     gt({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "gt", value });
+        this.add(`${columnName} > ?`, value);
     }
 
     gte({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "ge", value });
+        this.add(`${columnName} >= ?`, value);
     }
 
     range({ columnName, value }: DatabaseFilterOperatorParams): void {
         const { start, end } = value as { start: number | Date; end: number | Date };
-        this.stmt
-            .addWhereClauseItem({ column: columnName, operator: "ge", value: start })
-            .addWhereClauseItem({ column: columnName, operator: "le", value: end });
+        this.add(`${columnName} BETWEEN ? AND ?`, start, end);
     }
 
     in({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "isIn", value });
+        this.add(`${columnName} = ANY(?)`, ...(value as any[]));
     }
 
     notIn({ columnName, value }: DatabaseFilterOperatorParams): void {
-        this.stmt.addWhereClauseItem({ column: columnName, operator: "notIn", value });
+        this.add(`NOT (${columnName} = ANY(?))`, ...(value as any[]));
     }
 
     isNull({ columnName, value }: DatabaseFilterOperatorParams): void {
-        if (value) this.stmt.addWhereClauseItem({ column: columnName, operator: "empty", value: undefined });
-        else this.stmt.addWhereClauseItem({ column: columnName, operator: "notEmpty", value: undefined });
+        this.add(value ? `${columnName} IS NULL` : `${columnName} IS NOT NULL`);
+    }
+
+    // https://chatgpt.com/c/69531a82-c498-832f-ae23-60e0f15188bb
+    jsonExact({ columnName, value }: DatabaseFilterOperatorParams) {
+        // this.stmt.whereRaw(`${columnName} @> ?::jsonb`, [JSON.stringify(value)]);
+        // this.stmt.where;
+    }
+
+    jsonExists({ columnName, key }: { columnName: string; key: string }) {
+        // this.stmt.whereRaw(`${columnName} ? ?`, [key]);
+    }
+
+    jsonHasAll({ columnName, keys }: { columnName: string; keys: string[] }) {
+        // this.stmt.whereRaw(`${columnName} ?& ?`, [keys]);
+    }
+
+    jsonHasAny({ columnName, keys }: { columnName: string; keys: string[] }) {
+        // this.stmt.whereRaw(`${columnName} ?| ?`, [keys]);
+    }
+
+    jsonIn({ columnName, values }: { columnName: string; values: Record<string, unknown>[] }) {
+        // this.stmt.((qb) => {
+        //     values.forEach((val, index) => {
+        //         if (index === 0) {
+        //             qb.whereRaw(`${columnName} @> ?::jsonb`, [JSON.stringify(val)]);
+        //         } else {
+        //             qb.orWhereRaw(`${columnName} @> ?::jsonb`, [JSON.stringify(val)]);
+        //         }
+        //     });
+        // });
     }
 }
