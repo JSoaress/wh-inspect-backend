@@ -1,7 +1,7 @@
 import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { InvalidCredentialsError, InvalidUserError, MissingParamError, UseCase } from "@/app/_common";
+import { InvalidCredentialsError, MissingParamError, UseCase } from "@/app/_common";
 import { JsonWebToken } from "@/infra/adapters/jwt";
 import { env } from "@/shared/config/environment";
 
@@ -34,9 +34,8 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
             let user = await this.userRepository.findOne({ filter: { email: login.toLowerCase() } });
             if (!user) user = await this.userRepository.findOne({ filter: { username: login } });
             if (!user) return left(new InvalidCredentialsError());
-            const matchPassword = await user.verifyPassword(password);
-            if (!matchPassword) return left(new InvalidCredentialsError());
-            if (!user.isActive) return left(new InvalidUserError());
+            const matchPasswordOrError = await user.verifyPassword(password);
+            if (matchPasswordOrError.isLeft()) return left(matchPasswordOrError.value);
             const accessToken = this.jwt.generate(user.email, env.JWT_TOKEN_SECRET, this.hoursToMs(4));
             return right({
                 accessToken,

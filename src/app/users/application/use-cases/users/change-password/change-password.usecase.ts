@@ -1,7 +1,7 @@
 import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { InvalidCredentialsError, UseCase } from "@/app/_common";
+import { UseCase } from "@/app/_common";
 import { User } from "@/app/users/domain/models/user";
 
 import { IUserRepository } from "../../../repos";
@@ -28,7 +28,6 @@ export class ChangePasswordUseCase extends UseCase<ChangePasswordUseCaseInput, C
             const user = User.restore(requestUser);
             const matchPasswordOrError = await user.verifyPassword(currentPassword);
             if (matchPasswordOrError.isLeft()) return left(matchPasswordOrError.value);
-            if (!matchPasswordOrError.value) return left(new InvalidCredentialsError());
             const setPasswordOrError = await user.setPassword(newPassword);
             if (setPasswordOrError.isLeft()) return left(setPasswordOrError.value);
             await this.userRepository.save(user);
