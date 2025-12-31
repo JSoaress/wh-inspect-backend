@@ -3,7 +3,6 @@ import { QueryOptions } from "ts-arch-kit/dist/database";
 import { IWebhookLogRepository } from "@/app/projects/application/repos";
 import { ProjectDTO } from "@/app/projects/domain/models/project";
 import { SimplifiedWebhook, WebHookLogDTO } from "@/app/projects/domain/models/webhook";
-import { select } from "@rusdidev/pg-query-builder";
 
 import { DbColumns, DbFilterOptions } from "../../helpers";
 import { WebhookLogPgMapper } from "../mappers";
@@ -29,20 +28,13 @@ export class WebhookLogPgRepository
             columns[k] = { ...v, columnName: `w.${v.columnName}` };
         });
         const filterOptions: DbFilterOptions = { ...this.mapper.filterOptions, columns };
-        const stmt = select({ table: this.tableName, alias: "w" })
-            .addSelectItems("w.id", "w.project_id", "p.name", "w.received_from", "w.received_at", "w.replayed_at")
-            .addJoinTarget({
-                joinType: "JOIN",
-                targetTable: "projects",
-                alias: "p",
-                targetColumn: "id",
-                previousColumn: "project_id",
-            });
-        this.filter(stmt, filterOptions, queryOptions?.filter);
-        this.sort(stmt, columns, queryOptions?.sort);
-        this.pagination(stmt, queryOptions?.pagination);
-        const [query, values] = stmt.compile();
-        const { rows } = await this.query(query, values);
+        const base = `SELECT w.id, w.project_id, p.name, w.received_from, w.received_at, w.replayed_at FROM ${this.tableName} w
+        JOIN projects p ON p.id = w.project_id`;
+        const [where, params] = this.filter(filterOptions, queryOptions?.filter);
+        const sort = this.sort(filterOptions.columns, queryOptions?.sort);
+        const pagination = this.pagination(queryOptions?.pagination);
+        const query = this.prepareStmt(base, where, sort, pagination);
+        const { rows } = await this.query(query, params);
         return rows.map((r) => ({
             id: r.id,
             project: {

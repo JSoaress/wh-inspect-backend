@@ -12,9 +12,7 @@ import {
     DbTransactionNotPreparedError,
 } from "ts-arch-kit/dist/database";
 
-import { select, insert, update, remove } from "@rusdidev/pg-query-builder";
-
-import { DbFilterOptions, DbColumns, IRepository, SelectQueryBuilder } from "../../helpers";
+import { DbFilterOptions, DbColumns, IRepository } from "../../helpers";
 import { IDbMapper } from "../db-mapper";
 import { PgWhereFilter } from "./pg-where";
 
@@ -28,12 +26,12 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
     }
 
     async count(filter?: Where): Promise<number> {
-        const stmt = select({ table: this.tableName }).addSelectItems("count(id)");
-        this.filter(stmt, this.mapper.filterOptions, filter);
-        const [query, values] = stmt.compile();
+        const base = `SELECT count(id) as count FROM ${this.tableName}`;
+        const [where, params] = this.filter(this.mapper.filterOptions, filter);
+        const query = this.prepareStmt(base, where);
         const {
             rows: [row],
-        } = await this.query(query, values);
+        } = await this.query(query, params);
         return parseNumber(row.count);
     }
 
@@ -44,12 +42,12 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
 
     async find(queryOptions?: QueryOptions): Promise<T[]> {
         const { filter, pagination, sort } = queryOptions || {};
-        const stmt = select({ table: this.tableName }).addSelectItems("*");
-        this.filter(stmt, this.mapper.filterOptions, filter);
-        this.sort(stmt, this.mapper.filterOptions.columns, sort);
-        this.pagination(stmt, pagination);
-        const [query, values] = stmt.compile();
-        const { rows } = await this.query(query, values);
+        const base = `SELECT * FROM ${this.tableName}`;
+        const [where, params] = this.filter(this.mapper.filterOptions, filter);
+        const orderBy = this.sort(this.mapper.filterOptions.columns, sort);
+        const paginationQuery = this.pagination(pagination);
+        const query = this.prepareStmt(base, where, orderBy, paginationQuery);
+        const { rows } = await this.query(query, params);
         return rows.map((row) => this.mapper.toDomain(row));
     }
 
@@ -70,22 +68,20 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
             const ignore: string[] = data.id === 0 ? ["id"] : [];
             const insertObj = this.removeFieldsFromObject(persistenceData, ignore);
             const fields = Object.keys(insertObj);
-            const stmt = insert({ table: this.tableName })
-                .addColumnItem(...fields)
-                .addInsertPayload(insertObj as any)
-                .addReturnItems("*");
-            const [query, values] = stmt.compile();
+            const values = Object.values(insertObj);
+            const query = `INSERT INTO ${this.tableName} (${fields}) VALUES (${fields.map(
+                (f, i) => `${f} = $${i + 1}`
+            )}) RETURNING *`;
             const {
                 rows: [newEntity],
             } = await this.query(query, values);
             return this.mapper.toDomain(newEntity);
         }
         const updateObj = this.removeFieldsFromObject(persistenceData, ["id"]);
-        const stmt = update({ table: this.tableName })
-            .addSetClauseItems(updateObj as any)
-            .addWhereClauseItem({ column: "id", operator: "eq", value: data.id })
-            .addReturnItems("*");
-        const [query, values] = stmt.compile();
+        const fields = Object.keys(updateObj);
+        const values = [...Object.values(updateObj), data.id];
+        const set = fields.map((f, i) => `${f} = $${i + 1}`);
+        const query = `UPDATE FROM ${this.tableName} SET ${set} WHERE id = $${values.length} RETURNING *`;
         const {
             rows: [updatedEntity],
         } = await this.query(query, values);
@@ -93,29 +89,36 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
     }
 
     async destroy(model: T): Promise<void> {
-        const stmt = remove({ table: this.tableName }).addWhereClauseItem({ column: "id", operator: "eq", value: model.id });
-        const [query, values] = stmt.compile();
-        await this.query(query, values);
+        const query = `DELETE FROM ${this.tableName} WHERE id = $1`;
+        await this.query(query, [model.id]);
     }
 
-    filter(stmt: SelectQueryBuilder, filterOptions: DbFilterOptions, filter?: Where) {
-        const pgWhereFilter = new PgWhereFilter(stmt, this.mapper.filterOptions);
-        pgWhereFilter.filter(filterOptions, filter);
+    filter(filterOptions: DbFilterOptions, filter?: Where): [string, any[]] {
+        const pgWhereFilter = new PgWhereFilter();
+        const where = pgWhereFilter.filter(filterOptions, filter);
+        if (!where) return ["", []];
+        const { sql, params } = where.build();
+        return [sql, params];
     }
 
-    sort(stmt: SelectQueryBuilder, columns: DbColumns, sortParams?: SortParams[]) {
-        if (!sortParams) return;
-        sortParams.forEach((sort) => {
+    sort(columns: DbColumns, sortParams?: SortParams[]): string {
+        if (!sortParams) return "";
+        const order = sortParams.map((sort) => {
             const { column, order: direction } = sort;
             const { columnName } = columns[column];
-            const order = direction === "asc" ? "ASC" : "DESC";
-            stmt.addOrderByItem({ column: columnName, order });
+            return `${columnName} ${direction.toUpperCase()}`;
         });
+        return `ORDER BY ${order}`;
     }
 
-    pagination(stmt: SelectQueryBuilder, paginationParams?: PaginationParams) {
-        if (!paginationParams) return;
-        stmt.useLimit(paginationParams.limit, paginationParams.skip);
+    pagination(paginationParams?: PaginationParams): string {
+        if (!paginationParams) return "";
+        const { limit, skip } = paginationParams;
+        return `LIMIT ${limit} OFFSET ${skip}`;
+    }
+
+    prepareStmt(...fragments: string[]): string {
+        return fragments.filter(Boolean).join(" ");
     }
 
     removeFieldsFromObject(obj: Record<string, unknown>, ignore: string[] = []): Record<string, unknown> {
