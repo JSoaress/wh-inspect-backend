@@ -102,7 +102,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
     }
 
     sort(columns: DbColumns, sortParams?: SortParams[]): string {
-        if (!sortParams) return "";
+        if (!sortParams || !sortParams.length) return "";
         const order = sortParams.map((sort) => {
             const { column, order: direction } = sort;
             const { columnName } = columns[column];
