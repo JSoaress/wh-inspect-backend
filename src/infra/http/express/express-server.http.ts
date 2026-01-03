@@ -18,6 +18,7 @@ export class ExpressHttpServer {
     }
 
     register(...controllers: ExpressRouter[]): void {
+        this.app.use(middlewares.queryOptions);
         const allRoutes = controllers.flatMap((controller) => controller.getRoutes());
         allRoutes.forEach((route) => {
             const { method, path, auth, middlewares: routeMiddlewares } = route;
@@ -55,8 +56,9 @@ export class ExpressHttpServer {
     private buildDefaultHandler({ useCase: useCaseFn, buildInput }: RouteDefinition): RouteHandler {
         return async (useCaseFactory, req, res, next) => {
             if (!useCaseFn) return next();
-            const { requestUser, body } = req;
+            const { requestUser, body, queryOptions } = req;
             const input = buildInput ? { ...buildInput(req), requestUser } : { ...body, requestUser };
+            if (req.method === "GET") input.queryOptions = queryOptions;
             const useCase = useCaseFn(useCaseFactory);
             const response = await useCase.execute(input);
             if (response.isLeft()) next(response.value);
