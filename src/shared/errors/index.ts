@@ -20,3 +20,9 @@ export class HttpRouteNotFoundError extends BasicError {
         };
     }
 }
+
+export class HttpFilterTranslatorError extends BasicError {
+    constructor(field: string, value: string) {
+        super(`Não foi possível traduzir o filtro ${field}=${value}`, false);
+    }
+}
