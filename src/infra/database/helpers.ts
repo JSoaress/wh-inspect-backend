@@ -12,10 +12,11 @@ export interface IRepository<T extends AbstractModelProps, W = Record<string, un
 export type DbColumnType = "string" | "number" | "boolean" | "date" | "hour" | "json";
 
 export type FilterOperators<T> = BaseFilterOperators<T> & {
-    $jsonExists: T;
-    $jsonHasAll: T;
-    $jsonHasAny: T;
-    $jsonIn: T;
+    $jsonExact?: Record<string, unknown>;
+    $jsonExists?: string[];
+    $jsonHasAll?: string[];
+    $jsonHasAny?: string[];
+    $jsonIn?: Record<string, unknown>[];
 };
 
 export type DbFilterableColumn = {
