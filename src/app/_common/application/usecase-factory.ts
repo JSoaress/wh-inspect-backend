@@ -1,4 +1,5 @@
 import { CreateFeedbackUseCase } from "@/app/feedbacks/application/use-cases/feedback/create-feedback";
+import { FetchFeedbacksUseCase } from "@/app/feedbacks/application/use-cases/feedback/fetch-feedbacks";
 import { CreateProjectUseCase } from "@/app/projects/application/use-cases/projects/create-project";
 import { DeleteProjectUseCase } from "@/app/projects/application/use-cases/projects/delete-project";
 import { FetchProjectsUseCase } from "@/app/projects/application/use-cases/projects/fetch-projects";
@@ -156,6 +157,10 @@ export class UseCaseFactory {
 
     changeUserCliTokenUseCase() {
         return new ChangeUserCliTokenUseCase({ repositoryFactory: this.repositoryFactory, ws: this.ws });
+    }
+
+    fetchFeedbacksUseCase() {
+        return new FetchFeedbacksUseCase({ repositoryFactory: this.repositoryFactory });
     }
 
     createFeedbackUseCase() {
