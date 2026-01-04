@@ -50,6 +50,7 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
                     email: user.email,
                     cliToken: user.cliToken,
                     lastLogin: user.lastLogin,
+                    isAdmin: user.isAdmin,
                     isActive: user.isActive,
                     firstAccess,
                 },
