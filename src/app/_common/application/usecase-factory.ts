@@ -1,5 +1,6 @@
 import { CreateFeedbackUseCase } from "@/app/feedbacks/application/use-cases/feedback/create-feedback";
 import { FetchFeedbacksUseCase } from "@/app/feedbacks/application/use-cases/feedback/fetch-feedbacks";
+import { UpdateFeedbackUseCase } from "@/app/feedbacks/application/use-cases/feedback/update-feedback";
 import { CreateProjectUseCase } from "@/app/projects/application/use-cases/projects/create-project";
 import { DeleteProjectUseCase } from "@/app/projects/application/use-cases/projects/delete-project";
 import { FetchProjectsUseCase } from "@/app/projects/application/use-cases/projects/fetch-projects";
@@ -165,5 +166,9 @@ export class UseCaseFactory {
 
     createFeedbackUseCase() {
         return new CreateFeedbackUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    updateFeedbackUseCase() {
+        return new UpdateFeedbackUseCase({ repositoryFactory: this.repositoryFactory });
     }
 }
