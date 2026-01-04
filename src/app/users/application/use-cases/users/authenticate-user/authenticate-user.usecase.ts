@@ -36,6 +36,8 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
             if (!user) return left(new InvalidCredentialsError());
             const matchPasswordOrError = await user.verifyPassword(password);
             if (matchPasswordOrError.isLeft()) return left(matchPasswordOrError.value);
+            const lastLoginOrError = user.registerLogin();
+            if (lastLoginOrError.isLeft()) return left(lastLoginOrError.value);
             const accessToken = this.jwt.generate(user.email, env.JWT_TOKEN_SECRET, this.hoursToMs(4));
             return right({
                 accessToken,
@@ -45,6 +47,7 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
                     username: user.username,
                     email: user.email,
                     cliToken: user.cliToken,
+                    lastLogin: user.lastLogin,
                     isActive: user.isActive,
                 },
             });
