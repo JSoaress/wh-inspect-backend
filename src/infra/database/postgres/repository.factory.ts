@@ -1,5 +1,6 @@
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
+import { IFeedbackRepository } from "@/app/feedbacks/application/repos";
 import { IProjectRepository, IWebhookLogRepository } from "@/app/projects/application/repos";
 import { IParameterRepository } from "@/app/settings/application/repos";
 import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/application/repos";
@@ -36,5 +37,9 @@ export class PgRepositoryFactory implements IRepositoryFactory {
 
     createParameterRepository(): IParameterRepository {
         return new repos.DefaultPgRepository("parameters", new mappers.ParameterPgMapper());
+    }
+
+    createFeedbackRepository(): IFeedbackRepository {
+        return new repos.DefaultPgRepository("feedbacks", new mappers.FeedbackPgMapper());
     }
 }

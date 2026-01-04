@@ -1,5 +1,6 @@
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
+import { IFeedbackRepository } from "@/app/feedbacks/application/repos";
 import { IProjectRepository, IWebhookLogRepository } from "@/app/projects/application/repos";
 import { IParameterRepository } from "@/app/settings/application/repos";
 import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/application/repos";
@@ -16,6 +17,7 @@ export interface IRepositoryFactory {
     createPlanRepository(): IPlanRepository;
     createSubscriptionRepository(): ISubscriptionRepository;
     createParameterRepository(): IParameterRepository;
+    createFeedbackRepository(): IFeedbackRepository;
 }
 
 export class RepositoryFactory {

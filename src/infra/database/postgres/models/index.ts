@@ -77,3 +77,18 @@ export type PgParameterDTO = PgModelId & {
     value: string;
     is_system: boolean;
 };
+
+export type PgFeedbackDTO = PgModelId & {
+    user_id: string;
+    type: "bug" | "suggestion" | "improvement" | "question";
+    application: "web" | "cli";
+    title: string;
+    description: string | null;
+    status: "open" | "in_review" | "planned" | "done" | "rejected";
+    priority: "low" | "medium" | "high" | "critical";
+    page_url: string | null;
+    user_agent: string | null;
+    answer: string | null;
+    created_at: Date;
+    updated_at: Date | null;
+};
