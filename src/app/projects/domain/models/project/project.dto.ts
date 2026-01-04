@@ -31,4 +31,5 @@ export type ProjectMemberDTO = Pick<UserDTO, "id" | "name">;
 export type DetailedProjectDTO = Omit<ProjectDTO, "members"> & {
     members: ProjectMemberDTO[];
     blocked: boolean;
+    publicUrl: string;
 };

@@ -6,6 +6,7 @@ import { DetailedProjectDTO, ProjectMemberDTO } from "@/app/projects/domain/mode
 import { ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { IUserRepository } from "@/app/users/application/repos";
 import { User } from "@/app/users/domain/models/user";
+import { env } from "@/shared/config/environment";
 
 import { IProjectRepository } from "../../../repos";
 import {
@@ -47,6 +48,7 @@ export class FetchProjectsUseCase extends UseCase<FetchProjectsUseCaseInput, Fet
                         return { id, name: m.name };
                     }),
                     blocked: !allowedSubscriptionIds.some(({ id }) => id === project.sourceSubscription),
+                    publicUrl: `${env.SELF_URL}api/webhooks/in/${requestUser.username}/${project.slug}`,
                 };
             });
             return right({ count, results });

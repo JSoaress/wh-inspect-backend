@@ -3,6 +3,7 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { ConflictError, UseCase } from "@/app/_common";
 import { ProjectEntityFactory } from "@/app/projects/domain/models/project";
+import { env } from "@/shared/config/environment";
 
 import { IProjectRepository } from "../../../repos";
 import {
@@ -38,7 +39,10 @@ export class CreateProjectUseCase extends UseCase<CreateProjectUseCaseInput, Cre
             if (slugInUse)
                 return left(new ConflictError(`Você já possui outro projeto utilizando a slug "${projectCreated.slug}".`));
             const savedProject = await this.projectRepository.save(projectCreated);
-            return right(savedProject);
+            return right({
+                ...savedProject,
+                publicUrl: `${env.SELF_URL}api/webhooks/in/${requestUser.username}/${savedProject.slug}`,
+            });
         });
     }
 }
