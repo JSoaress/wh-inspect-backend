@@ -15,6 +15,7 @@ export const UserSchema = z.object({
     password: z.coerce.string(),
     cliToken: z.coerce.string().default(""),
     userToken: z.coerce.string().nullish().default(null),
+    lastLogin: z.date().nullish().default(null),
     createdAt: z.coerce.date().default(() => new Date()),
     isAdmin: z.coerce.boolean().default(false),
     isActive: z.coerce.boolean().default(false),
@@ -24,7 +25,7 @@ type Schema = typeof UserSchema;
 
 export type UserDTO = AbstractModelProps & Omit<z.output<Schema>, "password"> & { password: Password };
 
-export type CreateUserDTO = Omit<z.input<Schema>, "cliToken" | "userToken" | "createdAt" | "isActive">;
+export type CreateUserDTO = Omit<z.input<Schema>, "cliToken" | "userToken" | "lastLogin" | "createdAt" | "isActive">;
 
 export type UpdateUserDTO = Partial<Pick<CreateUserDTO, "name" | "isAdmin">>;
 

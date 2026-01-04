@@ -77,6 +77,10 @@ export class User extends Entity<UserDTO> {
         return this.props.userToken;
     }
 
+    get lastLogin() {
+        return this.props.lastLogin;
+    }
+
     get createdAt() {
         return this.props.createdAt;
     }
@@ -128,6 +132,12 @@ export class User extends Entity<UserDTO> {
         if (token !== this.props.userToken) return left(new InvalidTokenError("Token de ativação inválido."));
         this.props.userToken = null;
         this.props.isActive = true;
+        return right(undefined);
+    }
+
+    registerLogin(): Either<InvalidTokenError, void> {
+        if (!this.isActive) return left(new InvalidUserError());
+        this.props.lastLogin = new Date();
         return right(undefined);
     }
 }
