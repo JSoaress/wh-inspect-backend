@@ -81,7 +81,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         const fields = Object.keys(updateObj);
         const values = [...Object.values(updateObj), data.id];
         const set = fields.map((f, i) => `${f} = $${i + 1}`);
-        const query = `UPDATE FROM ${this.tableName} SET ${set} WHERE id = $${values.length} RETURNING *`;
+        const query = `UPDATE ${this.tableName} SET ${set} WHERE id = $${values.length} RETURNING *`;
         const {
             rows: [updatedEntity],
         } = await this.query(query, values);
