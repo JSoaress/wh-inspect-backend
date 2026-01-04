@@ -17,7 +17,9 @@ export type AuthenticateUserUseCaseInput = {
 
 type AuthenticatedUser = {
     accessToken: string;
-    user: Pick<UserDTO, "id" | "name" | "username" | "email" | "cliToken" | "lastLogin" | "isActive">;
+    user: Pick<UserDTO, "id" | "name" | "username" | "email" | "cliToken" | "lastLogin" | "isActive"> & {
+        firstAccess: boolean;
+    };
 };
 
 export type AuthenticateUserUseCaseOutput = Either<
