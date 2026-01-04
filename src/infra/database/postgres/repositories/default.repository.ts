@@ -70,7 +70,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
             const fields = Object.keys(insertObj);
             const values = Object.values(insertObj);
             const query = `INSERT INTO ${this.tableName} (${fields}) VALUES (${fields.map(
-                (f, i) => `${f} = $${i + 1}`
+                (f, i) => `$${i + 1}`
             )}) RETURNING *`;
             const {
                 rows: [newEntity],
