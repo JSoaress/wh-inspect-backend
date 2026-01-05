@@ -158,3 +158,9 @@ export class UserHasNoActiveSubscriptionError extends BasicError {
         super("Você não possui uma assinatura ativa.", true);
     }
 }
+
+export class RequestLimitExceededError extends BasicError {
+    constructor() {
+        super("Limite de requisições excedido, aguarde um momento.", true);
+    }
+}
