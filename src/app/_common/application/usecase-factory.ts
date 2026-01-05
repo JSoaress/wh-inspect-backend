@@ -32,6 +32,7 @@ import { UpdateUserUseCase } from "@/app/users/application/use-cases/users/updat
 import { JsonWebToken } from "@/infra/adapters/jwt";
 import { IWebSocket } from "@/infra/adapters/ws";
 import { IRepositoryFactory } from "@/infra/database";
+import { ICacheProvider } from "@/infra/providers/cache";
 import { IMail } from "@/infra/providers/mail";
 
 export class UseCaseFactory {
@@ -39,7 +40,8 @@ export class UseCaseFactory {
         private repositoryFactory: IRepositoryFactory,
         private mail: IMail,
         private jwt: JsonWebToken,
-        private ws: IWebSocket
+        private ws: IWebSocket,
+        private cache: ICacheProvider
     ) {}
 
     createUserUseCase() {
@@ -102,6 +104,7 @@ export class UseCaseFactory {
         return new ReceiveWebhookUseCase({
             repositoryFactory: this.repositoryFactory,
             forwardWebhookUseCase: this.forwardWebhookUseCase(),
+            cache: this.cache,
         });
     }
 

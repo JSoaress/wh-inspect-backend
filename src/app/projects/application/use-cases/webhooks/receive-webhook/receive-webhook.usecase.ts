@@ -1,8 +1,9 @@
 import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { NotFoundModelError, UseCase } from "@/app/_common";
+import { NotFoundModelError, RequestLimitExceededError, UseCase } from "@/app/_common";
 import { WebHookLogEntityFactory } from "@/app/projects/domain/models/webhook";
+import { ICacheProvider } from "@/infra/providers/cache";
 
 import { IProjectRepository, IWebhookLogRepository } from "../../../repos";
 import { ForwardWebhookUseCase } from "../forward-webhook/forward-webhook.usecase";
@@ -17,14 +18,16 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
     private projectRepository: IProjectRepository;
     private webhookLogRepository: IWebhookLogRepository;
     private forwardWebhookUseCase: ForwardWebhookUseCase;
+    private cache: ICacheProvider;
 
-    constructor({ repositoryFactory, forwardWebhookUseCase }: ReceiveWebhookUseCaseGateway) {
+    constructor({ repositoryFactory, forwardWebhookUseCase, cache }: ReceiveWebhookUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.projectRepository = repositoryFactory.createProjectRepository();
         this.webhookLogRepository = repositoryFactory.createWebhookLogRepository();
         this.unitOfWork.prepare(this.projectRepository, this.webhookLogRepository);
         this.forwardWebhookUseCase = forwardWebhookUseCase;
+        this.cache = cache;
     }
 
     protected async impl({ requestUser, ...input }: ReceiveWebhookUseCaseInput): Promise<ReceiveWebhookUseCaseOutput> {
@@ -32,6 +35,9 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
             const project = await this.projectRepository.findOne({ filter: { slug: input.projectSlug } });
             if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", { slug: input.projectSlug }));
+            const cacheKey = `webhook:rate:${project.id}`;
+            const count = await this.cache.increment(cacheKey, { ttl: 60 });
+            if (count > 300) return left(new RequestLimitExceededError());
             const webhookLogOrError = WebHookLogEntityFactory.create({
                 ...input,
                 projectId: `${project.id}`,
