@@ -6,7 +6,7 @@ import { DeleteProjectUseCase } from "@/app/projects/application/use-cases/proje
 import { FetchProjectsUseCase } from "@/app/projects/application/use-cases/projects/fetch-projects";
 import { ManageProjectMembersUseCase } from "@/app/projects/application/use-cases/projects/manage-project-members";
 import { UpdateProjectUseCase } from "@/app/projects/application/use-cases/projects/update-project";
-import { FetchSimplifiedWebhooksUseCase } from "@/app/projects/application/use-cases/webhooks/fetch-simplified-webhooks/fetch-simplified-webhooks.usecase";
+import { FetchSimplifiedWebhooksUseCase } from "@/app/projects/application/use-cases/webhooks/fetch-simplified-webhooks";
 import { ForwardWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/forward-webhook";
 import { GetWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/get-webhook";
 import { GetWebhookMetricsUseCase } from "@/app/projects/application/use-cases/webhooks/get-webhook-metrics";
