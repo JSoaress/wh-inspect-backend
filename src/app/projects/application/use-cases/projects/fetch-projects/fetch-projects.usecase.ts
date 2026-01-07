@@ -36,8 +36,11 @@ export class FetchProjectsUseCase extends UseCase<FetchProjectsUseCaseInput, Fet
                 requestUser.id,
                 requestUser.currentSubscriptionId
             );
-            const count = await this.projectRepository.count(queryOptions?.filter);
-            const projects = await this.projectRepository.find(queryOptions);
+            const { filter = {} } = queryOptions || {};
+            filter.owner = requestUser.id;
+            const count = await this.projectRepository.count(filter);
+            const projects = await this.projectRepository.find({ ...queryOptions, filter });
+            if (!projects.length) return right({ count, results: [] });
             const memberIds = Array.from(new Set(projects.flatMap((project) => project.members)));
             const members = await this.userRepository.find({ filter: { id: { $in: memberIds } } });
             const results = projects.map<DetailedProjectDTO>(({ members: memberIds, ...project }) => {
