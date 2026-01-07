@@ -14,6 +14,7 @@ class UserJsonPresenter implements IPresenter<User, UserJson> {
             username: input.username,
             email: input.email,
             cliToken: input.cliToken,
+            lastLogin: input.lastLogin,
             createdAt: input.createdAt,
             isActive: input.isActive,
         };
