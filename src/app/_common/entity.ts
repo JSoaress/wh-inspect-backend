@@ -1,8 +1,9 @@
-import { randomUUID } from "node:crypto";
 import { AbstractModel, AbstractModelProps, PrimaryKey } from "ts-arch-kit/dist/core/models";
 
+import { UUID } from "@/infra/adapters/uuid";
+
 export abstract class Entity<T extends AbstractModelProps> extends AbstractModel<T> {
-    protected constructor(props: T, idGenerator: () => PrimaryKey = randomUUID) {
+    protected constructor(props: T, idGenerator: () => PrimaryKey = () => UUID.generate("v7")) {
         super(props, !props.id, idGenerator);
     }
 
