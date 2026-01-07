@@ -1,48 +1,50 @@
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
-import { ExpressRouter } from "../express-router";
+import { userJsonPresenter } from "@/infra/presenters/json";
 
-const userRoutes = new ExpressRouter("/users");
+import { ExpressHttpServer } from "../express-server.http";
 
-userRoutes.register({
-    method: "post",
-    path: "/",
-    statusCode: HttpStatusCodes.CREATED,
-    useCase(factory) {
-        return factory.createUserUseCase();
-    },
-});
-userRoutes.register({
-    method: "patch",
-    auth: true,
-    path: "/",
-    useCase(factory) {
-        return factory.updateUserUseCase();
-    },
-});
-userRoutes.register({
-    method: "post",
-    path: "/activate",
-    statusCode: HttpStatusCodes.NO_CONTENT,
-    useCase(factory) {
-        return factory.activateUserUseCase();
-    },
-});
-userRoutes.register({
-    method: "post",
-    path: "/change-password",
-    auth: true,
-    useCase(factory) {
-        return factory.changePasswordUseCase();
-    },
-});
-userRoutes.register({
-    method: "put",
-    path: "/change-cli-token",
-    auth: true,
-    useCase(factory) {
-        return factory.changeUserCliTokenUseCase();
-    },
-});
-
-export { userRoutes };
+export function usersRouter(httpServer: ExpressHttpServer) {
+    httpServer.route({
+        method: "post",
+        path: "/users",
+        statusCode: HttpStatusCodes.CREATED,
+        useCase(factory) {
+            return factory.createUserUseCase();
+        },
+        presenter: (o) => userJsonPresenter.present(o),
+    });
+    httpServer.route({
+        method: "patch",
+        auth: true,
+        path: "/users",
+        useCase(factory) {
+            return factory.updateUserUseCase();
+        },
+        presenter: (o) => userJsonPresenter.present(o),
+    });
+    httpServer.route({
+        method: "post",
+        path: "/users/activate",
+        statusCode: HttpStatusCodes.NO_CONTENT,
+        useCase(factory) {
+            return factory.activateUserUseCase();
+        },
+    });
+    httpServer.route({
+        method: "post",
+        path: "/users/change-password",
+        auth: true,
+        useCase(factory) {
+            return factory.changePasswordUseCase();
+        },
+    });
+    httpServer.route({
+        method: "put",
+        path: "/users/change-cli-token",
+        auth: true,
+        useCase(factory) {
+            return factory.changeUserCliTokenUseCase();
+        },
+    });
+}

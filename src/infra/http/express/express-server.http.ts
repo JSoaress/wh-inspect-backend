@@ -1,70 +1,89 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from "cors";
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
+import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
 import { UseCaseFactory } from "@/app/_common/application";
 import { env } from "@/shared/config/environment";
 
-import { ExpressRouter, RouteDefinition, RouteHandler } from "./express-router";
-import * as middlewares from "./middlewares";
+import { AuthMiddlewareFactory, MiddlewareConfig, RouteDefinition, RouteHandler } from "./types";
 
 export class ExpressHttpServer {
     private app: express.Express;
+    private globalMiddlewares: MiddlewareConfig[] = [];
+    private authMiddleware?: AuthMiddlewareFactory;
 
     constructor(private baseUrl: string, private useCaseFactory: UseCaseFactory) {
         this.app = express();
-        this.app.use(express.json());
+        this.app.use(express.json({ limit: "1mb" }));
         this.app.use(cors());
         // this.app.use(helmet(opt.helmetOptions));
     }
 
-    register(...controllers: ExpressRouter[]): void {
-        this.app.use(middlewares.queryOptions);
-        const allRoutes = controllers.flatMap((controller) => controller.getRoutes());
-        allRoutes.forEach((route) => {
-            const { method, path, auth, middlewares: routeMiddlewares } = route;
-            const url = [this.baseUrl, ...path.split("/").filter(Boolean)].join("/");
-            if (env.NODE_ENV !== "production") console.log(`[${method.toUpperCase()}] ${url}`);
-            const pipeline: express.RequestHandler[] = [];
-            if (auth)
-                pipeline.push(
-                    middlewares.authorization(
-                        this.useCaseFactory.authenticatedUserDecorator(this.useCaseFactory.checkAuthenticatedUserUseCase())
-                    )
-                );
-            if (routeMiddlewares) pipeline.push(...routeMiddlewares(this.useCaseFactory));
-            pipeline.push(this.buildHandler(route), middlewares.formatRespose);
-            this.app[method](url, ...pipeline);
-        });
-        this.app.use(middlewares.notFoundRoute);
-        this.app.use(middlewares.errorHandler);
+    useMiddleware({ middleware }: MiddlewareConfig) {
+        this.app.use(middleware(this.useCaseFactory));
     }
 
-    private buildHandler(route: RouteDefinition) {
-        const { handler: customHandler, statusCode } = route;
-        const handler = customHandler || this.buildDefaultHandler(route);
-        return async (req: Request, res: Response, next: NextFunction) => {
+    useAuthMiddleware(middleware: AuthMiddlewareFactory) {
+        this.authMiddleware = middleware;
+    }
+
+    route(def: RouteDefinition): void {
+        const { method, path, auth, middlewares } = def;
+        const url = this.buildUrl(this.baseUrl, ...path.split("/"));
+        if (env.NODE_ENV !== "production") console.info(`[${method.toUpperCase()}] ${url}`);
+        const pipeline: express.RequestHandler[] = [];
+        if (auth && this.authMiddleware) pipeline.push(this.authMiddleware(this.useCaseFactory));
+        if (middlewares) pipeline.push(...middlewares(this.useCaseFactory));
+        pipeline.push(this.buildHandler(def));
+        this.app[method](url, ...pipeline);
+    }
+
+    private buildUrl(...paths: string[]): string {
+        let url = paths.join("/").replace(/\/{2,}/g, "/");
+        if (url.endsWith("/")) url = url.replace(/\/+$/, "");
+        return url;
+    }
+
+    private buildHandler(route: RouteDefinition): express.RequestHandler {
+        const handler = route.handler ?? this.buildDefaultHandler(route);
+        return async (req, res, next) => {
             try {
-                await handler(this.useCaseFactory, req, res, next);
-                res.locals.statusCode = statusCode;
-                next();
+                const result = await handler(this.useCaseFactory, req);
+                if (!result) return res.sendStatus(route.statusCode ?? HttpStatusCodes.NO_CONTENT);
+                // if (typeof result === "object" && "body" in result) {
+                //     return res
+                //         .status((result as any).statusCode ?? route.statusCode ?? HttpStatusCodes.OK)
+                //         .json(result.body);
+                // }
+                const output = route.presenter ? route.presenter(result) : result;
+                return res.status(route.statusCode ?? HttpStatusCodes.OK).send(output);
             } catch (error) {
-                next(error);
+                return next(error);
             }
         };
     }
 
     private buildDefaultHandler({ useCase: useCaseFn, buildInput }: RouteDefinition): RouteHandler {
-        return async (useCaseFactory, req, res, next) => {
-            if (!useCaseFn) return next();
+        return async (factory, req) => {
+            if (!useCaseFn) throw new Error("UseCase not provided.");
             const { requestUser, body, queryOptions } = req;
             const input = buildInput ? { ...buildInput(req), requestUser } : { ...body, requestUser };
-            if (req.method === "GET") input.queryOptions = queryOptions;
-            const useCase = useCaseFn(useCaseFactory);
+            if (req.method === "GET" && !input.queryOptions) input.queryOptions = queryOptions;
+            const useCase = useCaseFn(factory);
             const response = await useCase.execute(input);
-            if (response.isLeft()) next(response.value);
-            res.locals.body = response.value;
-            return undefined;
+            if (response.isLeft()) throw response.value;
+            return response.value;
         };
+    }
+
+    prepareMiddlewares() {
+        this.globalMiddlewares
+            .filter((mw) => mw.position === "before")
+            .forEach((mw) => this.app.use(mw.middleware(this.useCaseFactory)));
+        this.globalMiddlewares
+            .filter((mw) => mw.position === "after")
+            .forEach((mw) => this.app.use(mw.middleware(this.useCaseFactory)));
     }
 
     listen(port: number, callback?: (p: number) => void): void {

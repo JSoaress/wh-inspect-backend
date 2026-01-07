@@ -1,58 +1,70 @@
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
-import { ExpressRouter } from "../express-router";
+import { ExpressHttpServer } from "../express-server.http";
 import { isAdmin } from "../middlewares";
 
-const plansRoutes = new ExpressRouter("/plans", true, [isAdmin]);
-
-plansRoutes.register({
-    method: "get",
-    path: "/",
-    useCase(factory) {
-        return factory.fetchPlansUseCase();
-    },
-});
-plansRoutes.register({
-    method: "post",
-    path: "/",
-    statusCode: HttpStatusCodes.CREATED,
-    useCase(factory) {
-        return factory.createPlanUseCase();
-    },
-});
-plansRoutes.register({
-    method: "patch",
-    path: "/:plan",
-    buildInput(req) {
-        return { ...req.body, id: req.params.plan };
-    },
-    useCase(factory) {
-        return factory.updatePlanUseCase();
-    },
-});
-plansRoutes.register({
-    method: "delete",
-    path: "/:plan",
-    buildInput(req) {
-        return { id: req.params.plan };
-    },
-    useCase(factory) {
-        return factory.deletePlanUseCase();
-    },
-});
-
-const plansRoutes2 = new ExpressRouter("/plans", true);
-
-plansRoutes2.register({
-    method: "post",
-    path: "/:plan/subscribe",
-    statusCode: HttpStatusCodes.CREATED,
-    buildInput(req) {
-        return { ...req.body, selectedPlanId: req.params.plan };
-    },
-    useCase(factory) {
-        return factory.subscribePlanUseCase();
-    },
-});
-
-export { plansRoutes, plansRoutes2 };
+export function plansRouter(httpServer: ExpressHttpServer) {
+    httpServer.route({
+        method: "get",
+        path: "/plans",
+        auth: true,
+        middlewares() {
+            return [isAdmin];
+        },
+        useCase(factory) {
+            return factory.fetchPlansUseCase();
+        },
+    });
+    httpServer.route({
+        method: "post",
+        path: "/plans",
+        auth: true,
+        middlewares() {
+            return [isAdmin];
+        },
+        statusCode: HttpStatusCodes.CREATED,
+        useCase(factory) {
+            return factory.createPlanUseCase();
+        },
+    });
+    httpServer.route({
+        method: "patch",
+        path: "/plans/:plan",
+        auth: true,
+        middlewares() {
+            return [isAdmin];
+        },
+        buildInput(req) {
+            return { ...req.body, id: req.params.plan };
+        },
+        useCase(factory) {
+            return factory.updatePlanUseCase();
+        },
+    });
+    httpServer.route({
+        method: "delete",
+        path: "/plans/:plan",
+        auth: true,
+        middlewares() {
+            return [isAdmin];
+        },
+        buildInput(req) {
+            return { id: req.params.plan };
+        },
+        useCase(factory) {
+            return factory.deletePlanUseCase();
+        },
+    });
+    httpServer.route({
+        method: "post",
+        path: "/plans/:plan/subscribe",
+        auth: true,
+        statusCode: HttpStatusCodes.CREATED,
+        buildInput(req) {
+            return { ...req.body, selectedPlanId: req.params.plan };
+        },
+        useCase(factory) {
+            return factory.subscribePlanUseCase();
+        },
+    });
+}

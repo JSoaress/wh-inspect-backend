@@ -1,27 +1,25 @@
-import { ExpressRouter } from "../express-router";
+import { ExpressHttpServer } from "../express-server.http";
 
-const authRoutes = new ExpressRouter("/auth");
-
-authRoutes.register({
-    method: "post",
-    path: "/login",
-    useCase(factory) {
-        return factory.authenticateUserUseCase();
-    },
-});
-authRoutes.register({
-    method: "post",
-    path: "/password-recovery/send-email",
-    useCase(factory) {
-        return factory.sendEmailForPasswordRecoveryUseCase();
-    },
-});
-authRoutes.register({
-    method: "post",
-    path: "/password-recovery/reset",
-    useCase(factory) {
-        return factory.resetPasswordUseCase();
-    },
-});
-
-export { authRoutes };
+export function authRouter(httpServer: ExpressHttpServer) {
+    httpServer.route({
+        method: "post",
+        path: "/auth/login",
+        useCase(factory) {
+            return factory.authenticateUserUseCase();
+        },
+    });
+    httpServer.route({
+        method: "post",
+        path: "/auth/password-recovery/send-email",
+        useCase(factory) {
+            return factory.sendEmailForPasswordRecoveryUseCase();
+        },
+    });
+    httpServer.route({
+        method: "post",
+        path: "/auth/password-recovery/reset",
+        useCase(factory) {
+            return factory.resetPasswordUseCase();
+        },
+    });
+}
