@@ -4,6 +4,8 @@ import { Pool, PoolClient } from "pg";
 import { Left, Right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
+import { env } from "@/shared/config/environment";
+
 import { DBConnectionTimeoutError, DbTransactionNotPreparedError } from "../../errors";
 
 class PgConnection {
@@ -13,11 +15,11 @@ class PgConnection {
 
     constructor() {
         this.pool = new Pool({
-            user: "postgres",
-            host: "localhost",
-            database: "postgres",
-            password: 'li9Sv"jN:*B>6rC4}26}',
-            port: 5432,
+            user: env.DB_USER,
+            host: env.DB_HOST,
+            database: env.DB_DATABASE,
+            password: env.DB_PASSWORD,
+            port: env.DB_PORT,
             min: 2,
             idleTimeoutMillis: 10000,
             connectionTimeoutMillis: 30000,

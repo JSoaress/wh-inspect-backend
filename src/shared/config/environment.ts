@@ -11,4 +11,9 @@ export const env = {
     MAIL_USER: envVar.get("MAIL_USER").required().asString(),
     MAIL_PASS: envVar.get("MAIL_PASS").required().asString(),
     JWT_TOKEN_SECRET: envVar.get("JWT_TOKEN_SECRET").required().asString(),
+    DB_HOST: envVar.get("DB_HOST").required().asString(),
+    DB_PORT: envVar.get("DB_PORT").required().asInt(),
+    DB_USER: envVar.get("DB_USER").required().asString(),
+    DB_PASSWORD: envVar.get("DB_PASSWORD").required().asString(),
+    DB_DATABASE: envVar.get("DB_DATABASE").required().asString(),
 };
