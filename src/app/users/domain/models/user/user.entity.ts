@@ -44,8 +44,9 @@ export class User extends Entity<UserDTO> {
         return `${prefix}_${randomBytes(24).toString("hex")}`;
     }
 
-    update(input: UpdateUserDTO): Either<ValidationError, void> {
-        const validDataOrError = ZodValidator.validate({ ...this.props, ...input, updatedAt: new Date() }, UserSchema);
+    update({ name, isAdmin }: UpdateUserDTO): Either<ValidationError, void> {
+        const input = { ...this.props, name: name ?? this.name, isAdmin: isAdmin ?? this.isAdmin, updatedAt: new Date() };
+        const validDataOrError = ZodValidator.validate(input, UserSchema);
         if (!validDataOrError.success) return left(new ValidationError(User.name, validDataOrError.errors));
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password, ...updatedProps } = validDataOrError.data;
