@@ -5,6 +5,7 @@ import { JsonWebToken } from "./infra/adapters/jwt";
 import { SimpleWebSocket } from "./infra/adapters/ws";
 import { RepositoryFactory } from "./infra/database";
 import { ExpressHttpServer, HttpController } from "./infra/http";
+import { MemoryCache } from "./infra/providers/cache";
 import { MailFactory } from "./infra/providers/mail";
 import { env } from "./shared/config/environment";
 
@@ -13,7 +14,8 @@ async function bootstrap() {
     const mail = MailFactory.getMail(env.MAIL_PROVIDER);
     const jwt = new JsonWebToken();
     const ws = new SimpleWebSocket();
-    const useCaseFactory = new UseCaseFactory(repositoryFactory, mail, jwt, ws);
+    const cache = new MemoryCache();
+    const useCaseFactory = new UseCaseFactory(repositoryFactory, mail, jwt, ws, cache);
     ws.setGetUserUseCase(useCaseFactory.getUserUseCase());
     const httpServer = new ExpressHttpServer("/api", useCaseFactory);
     const app = httpServer.getServer();
