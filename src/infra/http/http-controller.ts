@@ -6,6 +6,7 @@ export class HttpController {
     constructor(private httpServer: ExpressHttpServer) {}
 
     setup() {
+        this.httpServer.useMiddleware({ position: "before", middleware: () => middlewares.trace });
         this.httpServer.useMiddleware({ position: "before", middleware: () => middlewares.queryOptions });
         this.httpServer.useAuthMiddleware((factory) =>
             middlewares.authorization(factory.authenticatedUserDecorator(factory.checkAuthenticatedUserUseCase()))
