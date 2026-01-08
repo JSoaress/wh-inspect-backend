@@ -1,7 +1,7 @@
 import { ReceiveWebhookUseCaseInput } from "@/app/projects/application/use-cases/webhooks/receive-webhook";
 
 import { ExpressHttpServer } from "../express-server.http";
-import { authorizationBasedUser, checkPlanLimit, routeTimeout, ipLimiter } from "../middlewares";
+import { authorizationBasedUser, checkPlanLimit, routeTimeout, ipLimiter, auditLog } from "../middlewares";
 
 export function webhooksRouter(httpServer: ExpressHttpServer) {
     httpServer.route({
@@ -13,6 +13,7 @@ export function webhooksRouter(httpServer: ExpressHttpServer) {
                 routeTimeout(5000),
                 authorizationBasedUser(factory.authenticatedUserDecorator(factory.getUserUseCase())),
                 checkPlanLimit("receive-event", factory.checkSubscriptionConsumption()),
+                auditLog("EVENT_RECEIVED"),
             ];
         },
         handler: async (factory, req) => {
@@ -39,7 +40,7 @@ export function webhooksRouter(httpServer: ExpressHttpServer) {
             return { webhookLogId: req.params.webhook };
         },
         middlewares(factory) {
-            return [checkPlanLimit("replay-event", factory.checkSubscriptionConsumption())];
+            return [checkPlanLimit("replay-event", factory.checkSubscriptionConsumption()), auditLog("EVENT_REPLAYED")];
         },
         useCase(factory) {
             return factory.replayWebhookUseCase();

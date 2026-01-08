@@ -5,3 +5,5 @@ export * from "./check-plan-limit.middleware";
 export * from "./query-options.middleware";
 export * from "./route-timeout.middleware";
 export * from "./ip-limiter.middleware";
+export * from "./trace.middleware";
+export * from "./audit-log.middleware";
