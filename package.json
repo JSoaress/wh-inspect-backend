@@ -1,5 +1,5 @@
 {
-    "name": "webhook-inspector-api",
+    "name": "hookhub-api",
     "version": "1.0.0",
     "main": "index.js",
     "repository": "git@github.com:JSoaress/bp-node-api.git",
@@ -10,7 +10,8 @@
     },
     "scripts": {
         "dev": "tsx watch --env-file=.env src/main-http.ts",
-        "build": "tsup src",
+        "start": "node --env-file=.env dist/main-http.js",
+        "build": "tsup && tsc-alias",
         "test": "vitest",
         "husky:prepare": "husky init",
         "migrate": "node-pg-migrate"
@@ -32,6 +33,7 @@
         "@typescript-eslint/eslint-plugin": "^5.26.0",
         "@typescript-eslint/parser": "^5.26.0",
         "commitizen": "^4.3.1",
+        "cpx": "^1.5.0",
         "cz-conventional-changelog": "^3.3.0",
         "dotenv": "^17.2.1",
         "eslint": "^8.16.0",
@@ -45,12 +47,14 @@
         "husky": "^9.1.7",
         "node-pg-migrate": "^8.0.3",
         "prettier": "^2.6.2",
+        "tsc-alias": "^1.8.16",
         "tsup": "^8.3.6",
         "tsx": "^4.19.2",
         "typescript": "^5.7.3",
         "vitest": "^3.0.6"
     },
     "dependencies": {
+        "axios": "^1.13.2",
         "bcrypt": "^6.0.0",
         "chance": "^1.1.13",
         "cors": "^2.8.5",
