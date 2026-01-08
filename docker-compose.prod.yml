@@ -1,0 +1,40 @@
+services:
+    hookhub-api:
+        build:
+            context: .
+            dockerfile: ./Dockerfile.prod
+            target: production
+        container_name: hookhub-app
+        restart: unless-stopped
+        command: yarn start
+        ports:
+            - "3333:3333"
+        env_file:
+            - ./.env
+        depends_on:
+            - hookhub-migrate
+
+    hookhub-migrate:
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
+            target: production
+        command: yarn migrate up
+        env_file:
+            - ./.env
+        depends_on:
+            - hookhub-db
+
+    hookhub-db:
+        image: postgres:17
+        container_name: hookhub-pg
+        restart: unless-stopped
+        env_file:
+            - ./.env
+        ports:
+            - "54321:5432"
+        volumes:
+            - hookhub_pgdata:/var/lib/postgresql/data
+
+volumes:
+    hookhub_pgdata:
