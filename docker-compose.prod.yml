@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: ./Dockerfile.prod
             target: production
-        container_name: hookhub-app
+        container_name: hookhub-api
         restart: unless-stopped
         command: yarn start
         ports:
