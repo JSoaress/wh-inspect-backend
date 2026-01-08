@@ -9,7 +9,7 @@ export class Password {
 
     static async create(plainPassword: string): Promise<Either<InvalidPasswordError, Password>> {
         if (!plainPassword) return left(new InvalidPasswordError("Senha não fornecida."));
-        if (env.NODE_ENV === "production" && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{8,}$/.test(plainPassword)) {
+        if (env.NODE_ENV === "production" && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{8,}$/.test(plainPassword)) {
             const criteria = `A senha precisa conter mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 caractere especial e sem espaços.`;
             return left(new InvalidPasswordError(criteria));
         }
