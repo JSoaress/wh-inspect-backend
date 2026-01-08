@@ -3,5 +3,6 @@ declare namespace Express {
     export interface Request {
         requestUser: import("@/app/users/domain/models/user").AuthenticatedUserDTO;
         queryOptions: import("ts-arch-kit/dist/database").QueryOptions;
+        trace: { requestId: string; startAt: number };
     }
 }
