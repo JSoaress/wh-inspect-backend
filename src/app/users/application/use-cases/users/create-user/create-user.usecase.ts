@@ -39,11 +39,12 @@ export class CreateUserUseCase extends UseCase<CreateUserUseCaseInput, CreateUse
     }
 
     async sendActivationEmail(savedUser: User) {
+        const path = join(__dirname, ...Array(6).fill(".."), "shared", "views", "emails", "activate-account.hbs");
         await this.mail.sendMail({
             to: [savedUser.email],
             subject: `Ativação de conta ${env.PLATFORM_NAME}`,
             template: {
-                path: join(process.cwd(), "src", "shared", "views", "emails", "activate-account.hbs"),
+                path,
                 variables: {
                     platform: env.PLATFORM_NAME,
                     name: savedUser.name,

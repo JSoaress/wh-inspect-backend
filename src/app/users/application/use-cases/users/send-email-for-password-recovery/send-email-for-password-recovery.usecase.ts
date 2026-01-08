@@ -39,11 +39,12 @@ export class SendEmailForPasswordRecoveryUseCase extends UseCase<
             const tokenOrError = user.putChangePasswordToken();
             if (tokenOrError.isLeft()) return left(tokenOrError.value);
             await this.userRepository.save(user);
+            const path = join(__dirname, ...Array(6).fill(".."), "shared", "views", "emails", "password-recovery.hbs");
             await this.mail.sendMail({
                 to: [user.email],
                 subject: `Recuperação de senha ${env.PLATFORM_NAME}`,
                 template: {
-                    path: join(process.cwd(), "src", "shared", "views", "emails", "password-recovery.hbs"),
+                    path,
                     variables: {
                         platform: env.PLATFORM_NAME,
                         name: user.name,
