@@ -12,6 +12,14 @@ export class HttpController {
             middlewares.authorization(factory.authenticatedUserDecorator(factory.checkAuthenticatedUserUseCase()))
         );
 
+        this.httpServer.route({
+            method: "get",
+            path: "/ping",
+            handler: async () => {
+                return "pong";
+            },
+        });
+
         router.usersRouter(this.httpServer);
         router.projectsRouter(this.httpServer);
         router.authRouter(this.httpServer);
