@@ -23,6 +23,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
                 replayStatus: { columnName: "replay_status", type: "string" },
                 targetUrl: { columnName: "target_url", type: "string" },
                 sourceSubscription: { columnName: "source_subscription", type: "string" },
+                _outOfSubscription: { columnName: "out_of_subscription", type: "boolean" },
             },
         };
     }
@@ -42,6 +43,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
             replayStatus: persistence.replay_status,
             targetUrl: persistence.target_url,
             sourceSubscription: persistence.source_subscription,
+            _outOfSubscription: persistence.out_of_subscription,
         });
     }
 
@@ -60,6 +62,7 @@ export class WebhookLogPgMapper implements IDbMapper<WebHookLogDTO, PgWebhookLog
             replay_status: entity.replayStatus,
             target_url: entity.targetUrl,
             source_subscription: entity.sourceSubscription,
+            out_of_subscription: entity._outOfSubscription,
         };
     }
 }

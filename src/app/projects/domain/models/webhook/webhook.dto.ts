@@ -17,6 +17,7 @@ export const WebHookLogSchema = z.object({
     replayStatus: z.enum(["success", "fail"]).nullish().default(null),
     targetUrl: z.coerce.string().nullish().default(null),
     sourceSubscription: z.uuid(),
+    _outOfSubscription: z.coerce.boolean().default(false),
 });
 
 type Schema = typeof WebHookLogSchema;

@@ -43,6 +43,7 @@ export type PgWebhookLogDTO = PgModelId & {
     replay_status: "success" | "fail" | null;
     target_url: string | null;
     source_subscription: string;
+    out_of_subscription: boolean;
 };
 
 export type PgPlanDTO = PgModelId & {
