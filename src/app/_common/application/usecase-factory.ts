@@ -28,6 +28,7 @@ import { CreateUserUseCase } from "@/app/users/application/use-cases/users/creat
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
 import { ResetPasswordUseCase } from "@/app/users/application/use-cases/users/reset-password";
 import { SendEmailForPasswordRecoveryUseCase } from "@/app/users/application/use-cases/users/send-email-for-password-recovery";
+import { SendUserActivationEmailUseCase } from "@/app/users/application/use-cases/users/send-user-activation-email";
 import { UpdateUserUseCase } from "@/app/users/application/use-cases/users/update-user";
 import { JsonWebToken } from "@/infra/adapters/jwt";
 import { IWebSocket } from "@/infra/adapters/ws";
@@ -48,6 +49,10 @@ export class UseCaseFactory {
 
     createUserUseCase() {
         return new CreateUserUseCase({ repositoryFactory: this.repositoryFactory, queue: this.queue });
+    }
+
+    sendUserActivationEmail() {
+        return new SendUserActivationEmailUseCase({ repositoryFactory: this.repositoryFactory, mail: this.mail });
     }
 
     activateUserUseCase() {
