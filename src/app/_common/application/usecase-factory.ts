@@ -11,6 +11,7 @@ import { ForwardWebhookUseCase } from "@/app/projects/application/use-cases/webh
 import { GetWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/get-webhook";
 import { GetWebhookMetricsUseCase } from "@/app/projects/application/use-cases/webhooks/get-webhook-metrics";
 import { ReceiveWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/receive-webhook";
+import { RegisterReceivedWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/register-received-webhook";
 import { ReplayWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/replay-webhook";
 import { CreatePlanUseCase } from "@/app/subscription/application/use-cases/plan/create-plan";
 import { DeletePlanUseCase } from "@/app/subscription/application/use-cases/plan/delete-plan";
@@ -110,8 +111,8 @@ export class UseCaseFactory {
     receiveWebhookUseCase() {
         return new ReceiveWebhookUseCase({
             repositoryFactory: this.repositoryFactory,
-            forwardWebhookUseCase: this.forwardWebhookUseCase(),
             cache: this.cache,
+            queue: this.queue,
         });
     }
 
@@ -120,10 +121,7 @@ export class UseCaseFactory {
     }
 
     replayWebhookUseCase() {
-        return new ReplayWebhookUseCase({
-            repositoryFactory: this.repositoryFactory,
-            forwardWebhookUseCase: this.forwardWebhookUseCase(),
-        });
+        return new ReplayWebhookUseCase({ repositoryFactory: this.repositoryFactory, queue: this.queue });
     }
 
     getWebhookMetrics() {
@@ -180,5 +178,9 @@ export class UseCaseFactory {
 
     updateFeedbackUseCase() {
         return new UpdateFeedbackUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    registerReceivedWebhookUseCase() {
+        return new RegisterReceivedWebhookUseCase({ repositoryFactory: this.repositoryFactory });
     }
 }

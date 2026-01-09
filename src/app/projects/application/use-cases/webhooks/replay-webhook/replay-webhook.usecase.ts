@@ -3,9 +3,9 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { NotFoundModelError, UseCase } from "@/app/_common";
 import { WebHookLogEntityFactory } from "@/app/projects/domain/models/webhook";
+import { IQueue } from "@/infra/queue";
 
 import { IProjectRepository, IWebhookLogRepository } from "../../../repos";
-import { ForwardWebhookUseCase } from "../forward-webhook/forward-webhook.usecase";
 import {
     ReplayWebhookUseCaseGateway,
     ReplayWebhookUseCaseInput,
@@ -16,15 +16,15 @@ export class ReplayWebhookUseCase extends UseCase<ReplayWebhookUseCaseInput, Rep
     private unitOfWork: UnitOfWork;
     private projectRepository: IProjectRepository;
     private webhookLogRepository: IWebhookLogRepository;
-    private forwardWebhookUseCase: ForwardWebhookUseCase;
+    private queue: IQueue;
 
-    constructor({ repositoryFactory, forwardWebhookUseCase }: ReplayWebhookUseCaseGateway) {
+    constructor({ repositoryFactory, queue }: ReplayWebhookUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.projectRepository = repositoryFactory.createProjectRepository();
         this.webhookLogRepository = repositoryFactory.createWebhookLogRepository();
         this.unitOfWork.prepare(this.projectRepository, this.webhookLogRepository);
-        this.forwardWebhookUseCase = forwardWebhookUseCase;
+        this.queue = queue;
     }
 
     protected async impl({
@@ -51,7 +51,10 @@ export class ReplayWebhookUseCase extends UseCase<ReplayWebhookUseCaseInput, Rep
             const replayedWebhook = await this.webhookLogRepository.save(webhookLogOrError.value);
             return right(replayedWebhook);
         });
-        if (result.isRight()) await this.forwardWebhookUseCase.execute({ requestUser, webhookLogId: result.value.id });
+        if (result.isRight()) {
+            await this.queue.publish("forwardWebhook", { requestUser, webhookLogId: result.value.id });
+            await this.queue.publish("registerReceivedWebhook", { project: result.value.projectId });
+        }
         return result;
     }
 }

@@ -5,13 +5,12 @@ import { CreateWebHookLogDTO, WebHookLogDTO } from "@/app/projects/domain/models
 import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
 import { ICacheProvider } from "@/infra/providers/cache";
-
-import { ForwardWebhookUseCase } from "../forward-webhook/forward-webhook.usecase";
+import { IQueue } from "@/infra/queue";
 
 export type ReceiveWebhookUseCaseGateway = {
     repositoryFactory: IRepositoryFactory;
-    forwardWebhookUseCase: ForwardWebhookUseCase;
     cache: ICacheProvider;
+    queue: IQueue;
 };
 
 export type ReceiveWebhookUseCaseInput = Omit<CreateWebHookLogDTO, "projectId" | "receivedAt" | "sourceSubscription"> & {

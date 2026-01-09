@@ -5,12 +5,11 @@ import { NotFoundModelError, ValidationError } from "@/app/_common";
 import { CreateWebHookLogDTO, WebHookLogDTO } from "@/app/projects/domain/models/webhook";
 import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
-
-import { ForwardWebhookUseCase } from "../forward-webhook/forward-webhook.usecase";
+import { IQueue } from "@/infra/queue";
 
 export type ReplayWebhookUseCaseGateway = {
     repositoryFactory: IRepositoryFactory;
-    forwardWebhookUseCase: ForwardWebhookUseCase;
+    queue: IQueue;
 };
 
 export type ReplayWebhookUseCaseInput = Partial<Pick<CreateWebHookLogDTO, "body" | "headers">> & {
