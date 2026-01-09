@@ -21,15 +21,12 @@ export class GetWebhookUseCase extends UseCase<GetWebhookUseCaseInput, GetWebhoo
 
     protected impl({ queryOptions, requestUser }: GetWebhookUseCaseInput): Promise<GetWebhookUseCaseOutput> {
         return this.unitOfWork.execute<GetWebhookUseCaseOutput>(async () => {
+            const { filter = {} } = queryOptions || {};
             const projects = await this.projectRepository.find({ filter: { owner: requestUser.id as string } });
             const projectIds = projects.map((project) => project.id as string);
-            const webhook = await this.webhookLogRepository.findOne({
-                ...queryOptions,
-                filter: {
-                    ...queryOptions?.filter,
-                    projectId: { $in: projectIds },
-                },
-            });
+            if (!requestUser.isAdmin) filter._outOfSubscription = false;
+            filter.projectId = { $in: projectIds };
+            const webhook = await this.webhookLogRepository.findOne({ ...queryOptions, filter });
             if (!webhook) return left(new NotFoundModelError("Webhook", queryOptions?.filter));
             return right(webhook);
         });

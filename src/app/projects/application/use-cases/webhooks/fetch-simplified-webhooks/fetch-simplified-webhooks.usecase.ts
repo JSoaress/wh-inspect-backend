@@ -33,6 +33,7 @@ export class FetchSimplifiedWebhooksUseCase extends UseCase<
             if (!project || !project.members.includes(`${requestUser.id}`))
                 return left(new NotFoundModelError("Project", projectId));
             const { filter = {}, ...qo } = queryOptions;
+            if (!requestUser.isAdmin) filter._outOfSubscription = false;
             filter.projectId = projectId;
             const count = await this.webhookRepository.count(filter);
             const webhooks = await this.webhookRepository.findSimplified({ ...qo, filter });
