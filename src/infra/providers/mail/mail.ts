@@ -4,6 +4,7 @@ import fs from "node:fs";
 export type SendMailOptions = {
     to: string[];
     subject: string;
+    text?: string;
     template?: {
         path: string;
         variables?: Record<string, unknown>;

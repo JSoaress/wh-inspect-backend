@@ -3,14 +3,15 @@ import nodemailer, { Transporter } from "nodemailer";
 import { Mail, SendMailOptions } from "./mail";
 
 export class EtherealMail extends Mail {
-    async sendMail({ to, subject, template }: SendMailOptions): Promise<void> {
+    async sendMail({ to, subject, text, template }: SendMailOptions): Promise<void> {
         let templateHTML: string | undefined;
         if (template) templateHTML = this.compileTemplate(template.path, template.variables || {});
         const client = await this.createTransporter();
         const message = await client.sendMail({
             to,
-            from: "Admin <noreply@observium.com.br>",
+            from: "Admin <noreply@hookhub.com.br>",
             subject,
+            text,
             html: templateHTML,
         });
         console.log("Message sent: %s", message?.messageId);

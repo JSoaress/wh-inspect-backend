@@ -20,13 +20,14 @@ export class NodemailerMail extends Mail {
         });
     }
 
-    async sendMail({ to, subject, template }: SendMailOptions): Promise<void> {
+    async sendMail({ to, subject, text, template }: SendMailOptions): Promise<void> {
         let templateHTML: string | undefined;
         if (template) templateHTML = this.compileTemplate(template.path, template.variables || {});
         await this.client?.sendMail({
             to,
             from: `Admin <${env.MAIL_USER}>`,
             subject,
+            text,
             html: templateHTML,
         });
     }
