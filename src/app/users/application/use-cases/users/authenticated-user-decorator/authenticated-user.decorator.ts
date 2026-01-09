@@ -32,9 +32,7 @@ export class AuthenticatedUserDecorator extends UseCase<AuthenticatedUserDecorat
                 const responseOrError = await this.useCase.execute({ token: input.token });
                 if (responseOrError.isLeft()) return left(responseOrError.value);
                 const user = responseOrError.value;
-                const currentSubscription = await this.subscriptionRepository.findOne({
-                    filter: { userId: user.getId(), endDate: { $isNull: true } },
-                });
+                const currentSubscription = await this.subscriptionRepository.getCurrentSubscriptionByUser(user);
                 if (!currentSubscription) return left(new UserHasNoActiveSubscriptionError());
                 return right({
                     ...user.toDto(),
@@ -45,9 +43,7 @@ export class AuthenticatedUserDecorator extends UseCase<AuthenticatedUserDecorat
                 const responseOrError = await this.useCase.execute({ filter: { username: input.username } });
                 if (responseOrError.isLeft()) return left(responseOrError.value);
                 const user = responseOrError.value;
-                const currentSubscription = await this.subscriptionRepository.findOne({
-                    filter: { userId: user.getId(), endDate: { $isNull: true } },
-                });
+                const currentSubscription = await this.subscriptionRepository.getCurrentSubscriptionByUser(user);
                 if (!currentSubscription) return left(new UserHasNoActiveSubscriptionError());
                 return right({
                     ...user.toDto(),
