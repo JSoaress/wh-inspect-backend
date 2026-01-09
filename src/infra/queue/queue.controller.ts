@@ -11,5 +11,15 @@ export class QueueController {
             const response = await useCase.execute(input);
             if (response.isLeft()) throw response.value;
         });
+        this.queue.on("registerReceivedWebhook", async (input) => {
+            const useCase = this.useCaseFactory.registerReceivedWebhookUseCase();
+            const response = await useCase.execute(input);
+            if (response.isLeft()) throw response.value;
+        });
+        this.queue.on("forwardWebhook", async (input) => {
+            const useCase = this.useCaseFactory.forwardWebhookUseCase();
+            const response = await useCase.execute(input);
+            if (response.isLeft()) throw response.value;
+        });
     }
 }

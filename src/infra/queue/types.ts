@@ -1,7 +1,11 @@
+import { ForwardWebhookUseCaseInput } from "@/app/projects/application/use-cases/webhooks/forward-webhook";
+import { RegisterReceivedWebhookUseCaseInput } from "@/app/projects/application/use-cases/webhooks/register-received-webhook";
 import { SendUserActivationEmailUseCaseInput } from "@/app/users/application/use-cases/users/send-user-activation-email";
 
 export type QueueEvents = {
     sendUserActivationEmail: SendUserActivationEmailUseCaseInput;
+    registerReceivedWebhook: RegisterReceivedWebhookUseCaseInput;
+    forwardWebhook: ForwardWebhookUseCaseInput;
 };
 
 export interface IQueue {
