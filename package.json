@@ -9,8 +9,8 @@
         "node": ">=20"
     },
     "scripts": {
-        "dev": "tsx watch --env-file=.env src/main-http.ts",
-        "start": "node --env-file=.env dist/main-http.js",
+        "dev": "tsx watch --env-file=.env src/main.ts",
+        "start": "node --env-file=.env dist/main.js",
         "build": "tsup && tsc-alias",
         "test": "vitest",
         "husky:prepare": "husky init",
@@ -20,6 +20,7 @@
         "@commitlint/cli": "^19.7.1",
         "@commitlint/config-conventional": "^19.7.1",
         "@tsconfig/node20": "^20.1.6",
+        "@types/amqplib": "^0.10.8",
         "@types/bcrypt": "^6.0.0",
         "@types/cors": "^2.8.19",
         "@types/dotenv": "^8.2.3",
@@ -54,6 +55,7 @@
         "vitest": "^3.0.6"
     },
     "dependencies": {
+        "amqplib": "^0.10.9",
         "axios": "^1.13.2",
         "bcrypt": "^6.0.0",
         "chance": "^1.1.13",
