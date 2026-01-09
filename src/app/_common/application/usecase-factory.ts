@@ -34,6 +34,7 @@ import { IWebSocket } from "@/infra/adapters/ws";
 import { IRepositoryFactory } from "@/infra/database";
 import { ICacheProvider } from "@/infra/providers/cache";
 import { IMail } from "@/infra/providers/mail";
+import { IQueue } from "@/infra/queue";
 
 export class UseCaseFactory {
     constructor(
@@ -41,11 +42,12 @@ export class UseCaseFactory {
         private mail: IMail,
         private jwt: JsonWebToken,
         private ws: IWebSocket,
-        private cache: ICacheProvider
+        private cache: ICacheProvider,
+        private queue: IQueue
     ) {}
 
     createUserUseCase() {
-        return new CreateUserUseCase({ repositoryFactory: this.repositoryFactory, mail: this.mail });
+        return new CreateUserUseCase({ repositoryFactory: this.repositoryFactory, queue: this.queue });
     }
 
     activateUserUseCase() {
