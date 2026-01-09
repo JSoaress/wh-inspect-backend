@@ -18,4 +18,5 @@ export const env = {
     DB_DATABASE: envVar.get("DB_DATABASE").required().asString(),
     LOG_MONITORING_URL: envVar.get("LOG_MONITORING_URL").required().asString(),
     LOG_MONITORING_API_KEY: envVar.get("LOG_MONITORING_API_KEY").required().asString(),
+    QUEUE_URL: envVar.get("QUEUE_URL").required().asString(),
 };
