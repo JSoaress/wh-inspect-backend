@@ -10,6 +10,7 @@ export type SubscriptionWhereRepository = SubscriptionDTO;
 export type SubscriptionsCovered = { id: string };
 
 export interface ISubscriptionRepository extends IRepository<Subscription, SubscriptionWhereRepository> {
+    getCurrentSubscriptionByUser(user: User): Promise<Subscription | null>;
     getConsumptionByUser(user: User): Promise<SubscriptionConsumptionDTO>;
     getSubscriptionsCoveredBy(userId: PrimaryKey, subscriptionId: PrimaryKey): Promise<SubscriptionsCovered[]>;
 }

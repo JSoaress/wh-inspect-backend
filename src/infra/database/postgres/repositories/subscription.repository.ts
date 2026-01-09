@@ -17,6 +17,10 @@ export class SubscriptionPgRepository
         super("subscriptions", new SubscriptionPgMapper());
     }
 
+    async getCurrentSubscriptionByUser(user: User): Promise<Subscription | null> {
+        return this.findOne({ filter: { userId: user.getId(), endDate: { $isNull: true } } });
+    }
+
     async getConsumptionByUser(user: User): Promise<SubscriptionConsumptionDTO> {
         const queryProjects = "SELECT count(id) FROM projects WHERE owner = $1";
         const {
