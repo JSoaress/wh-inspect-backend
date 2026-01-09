@@ -36,5 +36,17 @@ services:
         volumes:
             - hookhub_pgdata:/var/lib/postgresql/data
 
+    hookhub-rabbitmq:
+        image: rabbitmq:3-management
+        container_name: hookhub-queue
+        restart: unless-stopped
+        ports:
+            - "5673:5672"
+            - "15673:15672"
+        env_file:
+            - ./.env
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
     hookhub_pgdata:
