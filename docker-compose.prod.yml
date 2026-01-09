@@ -50,3 +50,4 @@ services:
 
 volumes:
     hookhub_pgdata:
+    rabbitmq_data:
