@@ -2,11 +2,13 @@ import http from "http";
 
 import { UseCaseFactory } from "./app/_common/application";
 import { JsonWebToken } from "./infra/adapters/jwt";
+import { logger } from "./infra/adapters/logger";
 import { SimpleWebSocket } from "./infra/adapters/ws";
 import { RepositoryFactory } from "./infra/database";
 import { ExpressHttpServer, HttpController } from "./infra/http";
 import { MemoryCache } from "./infra/providers/cache";
 import { MailFactory } from "./infra/providers/mail";
+import { QueueController, RabbitMQ } from "./infra/queue";
 import { env } from "./shared/config/environment";
 
 async function bootstrap() {
@@ -15,7 +17,11 @@ async function bootstrap() {
     const jwt = new JsonWebToken();
     const ws = new SimpleWebSocket();
     const cache = new MemoryCache();
-    const useCaseFactory = new UseCaseFactory(repositoryFactory, mail, jwt, ws, cache);
+    const queue = new RabbitMQ(logger);
+    await queue.connect();
+    const useCaseFactory = new UseCaseFactory(repositoryFactory, mail, jwt, ws, cache, queue);
+    const queueController = new QueueController(queue, useCaseFactory);
+    queueController.setup();
     ws.setGetUserUseCase(useCaseFactory.getUserUseCase());
     const httpServer = new ExpressHttpServer("/api", useCaseFactory);
     const app = httpServer.getServer();
