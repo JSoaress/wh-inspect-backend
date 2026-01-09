@@ -5,3 +5,4 @@ export * from "./plan.mapper";
 export * from "./subscription.mapper";
 export * from "./parameter.mapper";
 export * from "./feedback.mapper";
+export * from "./project-usage.mapper";

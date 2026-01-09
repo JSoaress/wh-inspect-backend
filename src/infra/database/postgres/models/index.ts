@@ -92,3 +92,11 @@ export type PgFeedbackDTO = PgModelId & {
     created_at: Date;
     updated_at: Date | null;
 };
+
+export type PgProjectUsageDTO = PgModelId & {
+    project_id: string;
+    year_month: string;
+    max_events: number;
+    events_count: number;
+    updated_at: Date | null;
+};
