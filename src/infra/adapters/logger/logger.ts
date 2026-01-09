@@ -12,6 +12,7 @@ type LogOptions = {
 } & (
     | { type: "http"; method: string; url: string; status: number; duration?: number }
     | { type: "other"; [key: string]: unknown }
+    | { type: "queue"; queue: string; jobId?: number; status?: string; duration?: number; [key: string]: unknown }
 );
 
 export class Logger {
