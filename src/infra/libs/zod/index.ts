@@ -15,7 +15,6 @@ type ErrorResult = {
 type ResultValidate<T> = SuccessResult<T> | ErrorResult;
 
 export class ZodValidator {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static validate<I, O>(props: unknown, schema: z.ZodType<O, I>): ResultValidate<O> {
         const result = schema.safeParse(props);
         if (result.success) return { success: true, data: result.data };
