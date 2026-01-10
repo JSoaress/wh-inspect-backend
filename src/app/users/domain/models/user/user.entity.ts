@@ -11,13 +11,13 @@ import {
 } from "@/app/_common";
 import { ZodValidator } from "@/infra/libs/zod";
 
-import { Password } from "./password.vo";
+import { IPasswordPolicy, Password } from "./password";
 import { CreateUserDTO, RestoreUserDTO, UpdateUserDTO, UserDTO, UserSchema } from "./user.dto";
 
 export class User extends Entity<UserDTO> {
-    static async create(props: CreateUserDTO): Promise<Either<ValidationError, User>> {
+    static async create(props: CreateUserDTO, passwordPolicy?: IPasswordPolicy): Promise<Either<ValidationError, User>> {
         const validDataOrError = ZodValidator.validate(props, UserSchema);
-        const passwordOrError = await Password.create(`${props.password}`);
+        const passwordOrError = await Password.create(`${props.password}`, { policy: passwordPolicy });
         let password: Password | null = null;
         if (!validDataOrError.success || passwordOrError.isLeft()) {
             const validationError = new ValidationError(User.name, {});
@@ -110,12 +110,13 @@ export class User extends Entity<UserDTO> {
 
     async setPassword(
         plainPassword: string,
+        passwordPolicy?: IPasswordPolicy,
         token?: string
     ): Promise<Either<InvalidUserError | InvalidTokenError | InvalidPasswordError, void>> {
         if (!this.isActive) return left(new InvalidUserError());
         if (token && token !== this.props.userToken)
             return left(new InvalidTokenError("Token de alteração de senha é inválido."));
-        const passwordOrError = await Password.create(plainPassword);
+        const passwordOrError = await Password.create(plainPassword, { policy: passwordPolicy });
         if (passwordOrError.isLeft()) return left(passwordOrError.value);
         this.props.password = passwordOrError.value;
         this.props.userToken = null;

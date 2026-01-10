@@ -3,7 +3,7 @@ import { AbstractModelProps, PrimaryKey } from "ts-arch-kit/dist/core/models";
 
 import { z } from "@/infra/libs/zod";
 
-import { Password } from "./password.vo";
+import { Password } from "./password";
 
 export const UserSchema = z.object({
     name: z.coerce.string().max(50),

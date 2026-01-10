@@ -1,8 +1,9 @@
+import { IPasswordPolicy } from "./password";
 import { CreateUserDTO, RestoreUserDTO } from "./user.dto";
 import { User } from "./user.entity";
 
-function create(input: CreateUserDTO) {
-    return User.create(input);
+function create(input: CreateUserDTO, passwordPolicy?: IPasswordPolicy) {
+    return User.create(input, passwordPolicy);
 }
 
 function restore(input: RestoreUserDTO) {

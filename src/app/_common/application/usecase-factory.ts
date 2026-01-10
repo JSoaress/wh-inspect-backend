@@ -38,6 +38,7 @@ import { IAppConfig } from "@/infra/config/app";
 import { IRepositoryFactory } from "@/infra/database";
 import { ICacheProvider } from "@/infra/providers/cache";
 import { IMail } from "@/infra/providers/mail";
+import { IPasswordPolicyProvider } from "@/infra/providers/password";
 import { IQueue } from "@/infra/queue";
 
 export class UseCaseFactory {
@@ -49,11 +50,16 @@ export class UseCaseFactory {
         private cache: ICacheProvider,
         private queue: IQueue,
         private appConfig: IAppConfig,
-        readonly logger: Logger
+        readonly logger: Logger,
+        private passwordPolicyProvider: IPasswordPolicyProvider
     ) {}
 
     createUserUseCase() {
-        return new CreateUserUseCase({ repositoryFactory: this.repositoryFactory, queue: this.queue });
+        return new CreateUserUseCase({
+            repositoryFactory: this.repositoryFactory,
+            queue: this.queue,
+            passwordPolicyProvider: this.passwordPolicyProvider,
+        });
     }
 
     sendUserActivationEmail() {
@@ -169,7 +175,10 @@ export class UseCaseFactory {
     }
 
     changePasswordUseCase() {
-        return new ChangePasswordUseCase({ repositoryFactory: this.repositoryFactory });
+        return new ChangePasswordUseCase({
+            repositoryFactory: this.repositoryFactory,
+            passwordPolicyProvider: this.passwordPolicyProvider,
+        });
     }
 
     sendEmailForPasswordRecoveryUseCase() {
@@ -181,7 +190,10 @@ export class UseCaseFactory {
     }
 
     resetPasswordUseCase() {
-        return new ResetPasswordUseCase({ repositoryFactory: this.repositoryFactory });
+        return new ResetPasswordUseCase({
+            repositoryFactory: this.repositoryFactory,
+            passwordPolicyProvider: this.passwordPolicyProvider,
+        });
     }
 
     changeUserCliTokenUseCase() {

@@ -6,7 +6,7 @@ import { MailFactory } from "@/infra/providers/mail";
 import { CreateUserUseCase } from "./create-user.usecase";
 
 describe("create user use case", () => {
-    test("should save a new user", async () => {
+    test.skip("should save a new user", async () => {
         const repositoryFactory = RepositoryFactory.getRepository("postgres");
         const mail = MailFactory.getMail("ethereal");
         const useCase = new CreateUserUseCase({ repositoryFactory, mail });

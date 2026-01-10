@@ -3,6 +3,7 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { EmailTakenError, UseCase, UsernameTakenError } from "@/app/_common";
 import { UserEntityFactory } from "@/app/users/domain/models/user";
+import { IPasswordPolicyProvider } from "@/infra/providers/password";
 import { IQueue } from "@/infra/queue";
 
 import { IUserRepository } from "../../../repos";
@@ -12,18 +13,21 @@ export class CreateUserUseCase extends UseCase<CreateUserUseCaseInput, CreateUse
     private unitOfWork: UnitOfWork;
     private userRepository: IUserRepository;
     private queue: IQueue;
+    private passwordPolicyProvider: IPasswordPolicyProvider;
 
-    constructor({ repositoryFactory, queue }: CreateUserUseCaseGateway) {
+    constructor({ repositoryFactory, queue, passwordPolicyProvider }: CreateUserUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.userRepository = repositoryFactory.createUserRepository();
         this.unitOfWork.prepare(this.userRepository);
         this.queue = queue;
+        this.passwordPolicyProvider = passwordPolicyProvider;
     }
 
     protected async impl(input: CreateUserUseCaseInput): Promise<CreateUserUseCaseOutput> {
         const response = await this.unitOfWork.execute<CreateUserUseCaseOutput>(async () => {
-            const userOrError = await UserEntityFactory.create(input);
+            const passwordPolicy = this.passwordPolicyProvider.getPolicy();
+            const userOrError = await UserEntityFactory.create(input, passwordPolicy);
             if (userOrError.isLeft()) return left(userOrError.value);
             const userCreated = userOrError.value;
             const emailInUse = await this.userRepository.exists({ email: userCreated.email });
