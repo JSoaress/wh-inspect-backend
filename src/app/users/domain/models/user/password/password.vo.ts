@@ -2,18 +2,19 @@ import bcrypt from "bcrypt";
 import { Either, left, right } from "ts-arch-kit/dist/core/helpers";
 
 import { InvalidPasswordError } from "@/app/_common";
-import { env } from "@/shared/config/environment";
+
+import { PasswordProps } from "./types";
 
 export class Password {
     private constructor(private value: string) {}
 
-    static async create(plainPassword: string): Promise<Either<InvalidPasswordError, Password>> {
+    static async create(plainPassword: string, props?: PasswordProps): Promise<Either<InvalidPasswordError, Password>> {
         if (!plainPassword) return left(new InvalidPasswordError("Senha não fornecida."));
-        if (env.NODE_ENV === "production" && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{8,}$/.test(plainPassword)) {
-            const criteria = `A senha precisa conter mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 caractere especial e sem espaços.`;
-            return left(new InvalidPasswordError(criteria));
+        if (props?.policy) {
+            const isValidOrError = props.policy.validate(plainPassword);
+            if (isValidOrError.isLeft()) return left(isValidOrError.value);
         }
-        const hashPassword = await bcrypt.hash(plainPassword, 12);
+        const hashPassword = await bcrypt.hash(plainPassword, props?.hashRounds || 12);
         return right(new Password(hashPassword));
     }
 
