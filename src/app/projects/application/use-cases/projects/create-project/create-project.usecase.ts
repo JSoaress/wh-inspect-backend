@@ -3,7 +3,7 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { ConflictError, UseCase } from "@/app/_common";
 import { ProjectEntityFactory } from "@/app/projects/domain/models/project";
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 import { IProjectRepository } from "../../../repos";
 import {
@@ -15,12 +15,14 @@ import {
 export class CreateProjectUseCase extends UseCase<CreateProjectUseCaseInput, CreateProjectUseCaseOutput> {
     private unitOfWork: UnitOfWork;
     private projectRepository: IProjectRepository;
+    private appConfig: IAppConfig;
 
-    constructor({ repositoryFactory }: CreateProjectUseCaseGateway) {
+    constructor({ repositoryFactory, appConfig }: CreateProjectUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.projectRepository = repositoryFactory.createProjectRepository();
         this.unitOfWork.prepare(this.projectRepository);
+        this.appConfig = appConfig;
     }
 
     protected async impl({ requestUser, ...input }: CreateProjectUseCaseInput): Promise<CreateProjectUseCaseOutput> {
@@ -41,7 +43,7 @@ export class CreateProjectUseCase extends UseCase<CreateProjectUseCaseInput, Cre
             const savedProject = await this.projectRepository.save(projectCreated);
             return right({
                 ...savedProject,
-                publicUrl: `${env.SELF_URL}api/webhooks/in/${requestUser.username}/${savedProject.slug}`,
+                publicUrl: `${this.appConfig.SELF_URL}api/webhooks/in/${requestUser.username}/${savedProject.slug}`,
             });
         });
     }

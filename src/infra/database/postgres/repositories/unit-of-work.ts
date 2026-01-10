@@ -4,7 +4,7 @@ import { Pool, PoolClient } from "pg";
 import { Left, Right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 import { DBConnectionTimeoutError, DbTransactionNotPreparedError } from "../../errors";
 
@@ -13,22 +13,22 @@ class PgConnection {
     // eslint-disable-next-line no-use-before-define
     private static instance: PgConnection | null = null;
 
-    constructor() {
+    constructor(appConfig: IAppConfig) {
         this.pool = new Pool({
-            user: env.DB_USER,
-            host: env.DB_HOST,
-            database: env.DB_DATABASE,
-            password: env.DB_PASSWORD,
-            port: env.DB_PORT,
+            user: appConfig.DB_USER,
+            host: appConfig.DB_HOST,
+            database: appConfig.DB_DATABASE,
+            password: appConfig.DB_PASSWORD,
+            port: appConfig.DB_PORT,
             min: 2,
             idleTimeoutMillis: 10000,
             connectionTimeoutMillis: 30000,
         });
     }
 
-    static getInstance() {
+    static getInstance(appConfig: IAppConfig) {
         if (!PgConnection.instance) {
-            PgConnection.instance = new PgConnection();
+            PgConnection.instance = new PgConnection(appConfig);
         }
         return PgConnection.instance;
     }
@@ -40,9 +40,9 @@ export class PgUnitOfWork extends UnitOfWork<PoolClient> {
     private RECONNECTION_ATTEMPTS = 5;
     private RECONNECTION_DELAY = 3000;
 
-    constructor() {
+    constructor(appConfig: IAppConfig) {
         super();
-        this.pool = PgConnection.getInstance().pool;
+        this.pool = PgConnection.getInstance(appConfig).pool;
     }
 
     async start(): Promise<void> {

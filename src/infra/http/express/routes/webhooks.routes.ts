@@ -13,7 +13,7 @@ export function webhooksRouter(httpServer: ExpressHttpServer) {
                 routeTimeout(5000),
                 authorizationBasedUser(factory.authenticatedUserDecorator(factory.getUserUseCase())),
                 checkPlanLimit("receive-event", factory.checkSubscriptionConsumption()),
-                auditLog("EVENT_RECEIVED"),
+                auditLog(factory.logger, "EVENT_RECEIVED"),
             ];
         },
         handler: async (factory, req) => {
@@ -40,7 +40,10 @@ export function webhooksRouter(httpServer: ExpressHttpServer) {
             return { webhookLogId: req.params.webhook };
         },
         middlewares(factory) {
-            return [checkPlanLimit("replay-event", factory.checkSubscriptionConsumption()), auditLog("EVENT_REPLAYED")];
+            return [
+                checkPlanLimit("replay-event", factory.checkSubscriptionConsumption()),
+                auditLog(factory.logger, "EVENT_REPLAYED"),
+            ];
         },
         useCase(factory) {
             return factory.replayWebhookUseCase();

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 type LogOptions = {
     message: string;
@@ -16,15 +16,17 @@ type LogOptions = {
 );
 
 export class Logger {
+    constructor(private appConfig: IAppConfig) {}
+
     log(log: LogOptions) {
         const { message, externalId, level, error, stack, tags, ...context } = log;
         const body = { message, externalId, level, error, stack, tags, context };
-        if (env.NODE_ENV !== "production") console.log(body);
+        if (this.appConfig.NODE_ENV !== "production") console.log(body);
         axios
-            .post(env.LOG_MONITORING_URL, body, {
+            .post(this.appConfig.LOG_MONITORING_URL, body, {
                 headers: {
                     "Content-Type": "Application/json",
-                    Authorization: `APIKEY ${env.LOG_MONITORING_API_KEY}`,
+                    Authorization: `APIKEY ${this.appConfig.LOG_MONITORING_API_KEY}`,
                 },
             })
             .catch(() => {
@@ -32,5 +34,3 @@ export class Logger {
             });
     }
 }
-
-export const logger = new Logger();

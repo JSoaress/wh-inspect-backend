@@ -4,8 +4,8 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { NotFoundModelError, UseCase } from "@/app/_common";
 import { User } from "@/app/users/domain/models/user";
+import { IAppConfig } from "@/infra/config/app";
 import { IMail } from "@/infra/providers/mail";
-import { env } from "@/shared/config/environment";
 
 import { IUserRepository } from "../../../repos";
 import {
@@ -21,13 +21,15 @@ export class SendEmailForPasswordRecoveryUseCase extends UseCase<
     private unitOfWork: UnitOfWork;
     private userRepository: IUserRepository;
     private mail: IMail;
+    private appConfig: IAppConfig;
 
-    constructor({ repositoryFactory, mail }: SendEmailForPasswordRecoveryUseCaseGateway) {
+    constructor({ repositoryFactory, mail, appConfig }: SendEmailForPasswordRecoveryUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.userRepository = repositoryFactory.createUserRepository();
         this.unitOfWork.prepare(this.userRepository);
         this.mail = mail;
+        this.appConfig = appConfig;
     }
 
     protected async impl({
@@ -42,13 +44,13 @@ export class SendEmailForPasswordRecoveryUseCase extends UseCase<
             const path = join(__dirname, ...Array(6).fill(".."), "shared", "views", "emails", "password-recovery.hbs");
             await this.mail.sendMail({
                 to: [user.email],
-                subject: `Recuperação de senha ${env.PLATFORM_NAME}`,
+                subject: `Recuperação de senha ${this.appConfig.PLATFORM_NAME}`,
                 template: {
                     path,
                     variables: {
-                        platform: env.PLATFORM_NAME,
+                        platform: this.appConfig.PLATFORM_NAME,
                         name: user.name,
-                        recoveryLink: `${env.WEB_URL}password-recovery/change-password/${user.userToken}`,
+                        recoveryLink: `${this.appConfig.WEB_URL}password-recovery/change-password/${user.userToken}`,
                         year: new Date().getFullYear(),
                     },
                 },

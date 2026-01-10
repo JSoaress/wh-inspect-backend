@@ -5,14 +5,17 @@ import { IProjectRepository, IProjectUsageRepository, IWebhookLogRepository } fr
 import { IParameterRepository } from "@/app/settings/application/repos";
 import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { IUserRepository } from "@/app/users/application/repos";
+import { IAppConfig } from "@/infra/config/app";
 
 import { IRepositoryFactory } from "../repository.factory";
 import * as mappers from "./mappers";
 import * as repos from "./repositories";
 
 export class PgRepositoryFactory implements IRepositoryFactory {
+    constructor(private appConfig: IAppConfig) {}
+
     createUnitOfWork(): UnitOfWork {
-        return new repos.PgUnitOfWork();
+        return new repos.PgUnitOfWork(this.appConfig);
     }
 
     createUserRepository(): IUserRepository {

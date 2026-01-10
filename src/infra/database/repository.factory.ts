@@ -7,6 +7,7 @@ import { IPlanRepository, ISubscriptionRepository } from "@/app/subscription/app
 import { IUserRepository } from "@/app/users/application/repos";
 import { MissingDependencyError } from "@/shared/errors";
 
+import { IAppConfig } from "../config/app";
 import { PgRepositoryFactory } from "./postgres/repository.factory";
 
 export interface IRepositoryFactory {
@@ -22,10 +23,10 @@ export interface IRepositoryFactory {
 }
 
 export class RepositoryFactory {
-    static getRepository(provider: string): IRepositoryFactory {
-        switch (provider) {
+    static getRepository(appConfig: IAppConfig): IRepositoryFactory {
+        switch (appConfig.DB_PROVIDER) {
             case "postgres":
-                return new PgRepositoryFactory();
+                return new PgRepositoryFactory(appConfig);
             default:
                 throw new MissingDependencyError("IRepositoryFactory");
         }

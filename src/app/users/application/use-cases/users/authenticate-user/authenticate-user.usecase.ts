@@ -3,7 +3,7 @@ import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { InvalidCredentialsError, MissingParamError, UseCase } from "@/app/_common";
 import { JsonWebToken } from "@/infra/adapters/jwt";
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 import { IUserRepository } from "../../../repos";
 import {
@@ -16,13 +16,15 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
     private unitOfWork: UnitOfWork;
     private userRepository: IUserRepository;
     private jwt: JsonWebToken;
+    private appConfig: IAppConfig;
 
-    constructor({ repositoryFactory, jwt }: AuthenticateUserUseCaseGateway) {
+    constructor({ repositoryFactory, jwt, appConfig }: AuthenticateUserUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.userRepository = repositoryFactory.createUserRepository();
         this.unitOfWork.prepare(this.userRepository);
         this.jwt = jwt;
+        this.appConfig = appConfig;
     }
 
     protected async impl({ login, password }: AuthenticateUserUseCaseInput): Promise<AuthenticateUserUseCaseOutput> {
@@ -40,7 +42,7 @@ export class AuthenticateUserUseCase extends UseCase<AuthenticateUserUseCaseInpu
             const lastLoginOrError = user.registerLogin();
             if (lastLoginOrError.isLeft()) return left(lastLoginOrError.value);
             await this.userRepository.save(user);
-            const accessToken = this.jwt.generate(user.email, env.JWT_TOKEN_SECRET, this.hoursToMs(4));
+            const accessToken = this.jwt.generate(user.email, this.appConfig.JWT_TOKEN_SECRET, this.hoursToMs(4));
             return right({
                 accessToken,
                 user: {

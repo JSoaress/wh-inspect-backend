@@ -1,12 +1,14 @@
 import { Either } from "ts-arch-kit/dist/core/helpers";
 
 import { InvalidUserError, NotFoundModelError } from "@/app/_common";
+import { IAppConfig } from "@/infra/config/app";
 import { IRepositoryFactory } from "@/infra/database";
 import { IMail } from "@/infra/providers/mail";
 
 export type SendEmailForPasswordRecoveryUseCaseGateway = {
     repositoryFactory: IRepositoryFactory;
     mail: IMail;
+    appConfig: IAppConfig;
 };
 
 export type SendEmailForPasswordRecoveryUseCaseInput = {

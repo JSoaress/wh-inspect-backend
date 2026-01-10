@@ -1,9 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import amqp, { ChannelModel } from "amqplib";
 
-import { env } from "@/shared/config/environment";
-
 import { Logger } from "../adapters/logger";
+import { IAppConfig } from "../config/app";
 import { QueueConnectionError } from "./errors";
 import { IQueue, QueueEvents } from "./types";
 
@@ -12,12 +11,12 @@ export class RabbitMQ implements IQueue {
     private RECONNECTION_ATTEMPTS = 5;
     private RECONNECTION_DELAY = 3000;
 
-    constructor(private logger?: Logger) {}
+    constructor(private appConfig: IAppConfig, private logger?: Logger) {}
 
     async connect(): Promise<void> {
         for (let i = 0; i < this.RECONNECTION_ATTEMPTS; i += 1) {
             try {
-                this.connection = await amqp.connect(env.QUEUE_URL);
+                this.connection = await amqp.connect(this.appConfig.QUEUE_URL);
                 console.info("✅🐇  [RabbitMQ] Successfully connected!");
                 return;
             } catch (error) {

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
-import { logger } from "@/infra/adapters/logger";
+import { Logger } from "@/infra/adapters/logger";
 
-export function auditLog(action: string) {
+export function auditLog(logger: Logger, action: string) {
     return (req: Request, res: Response, next: NextFunction) => {
         res.on("finish", () => {
             if (res.statusCode < 400) {

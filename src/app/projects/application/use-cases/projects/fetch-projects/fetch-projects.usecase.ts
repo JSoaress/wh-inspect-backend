@@ -6,7 +6,7 @@ import { DetailedProjectDTO, ProjectMemberDTO } from "@/app/projects/domain/mode
 import { ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { IUserRepository } from "@/app/users/application/repos";
 import { User } from "@/app/users/domain/models/user";
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 import { IProjectRepository } from "../../../repos";
 import {
@@ -20,14 +20,16 @@ export class FetchProjectsUseCase extends UseCase<FetchProjectsUseCaseInput, Fet
     private subscriptionRepository: ISubscriptionRepository;
     private projectRepository: IProjectRepository;
     private userRepository: IUserRepository;
+    private appConfig: IAppConfig;
 
-    constructor({ repositoryFactory }: FetchProjectsUseCaseGateway) {
+    constructor({ repositoryFactory, appConfig }: FetchProjectsUseCaseGateway) {
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.subscriptionRepository = repositoryFactory.createSubscriptionRepository();
         this.projectRepository = repositoryFactory.createProjectRepository();
         this.userRepository = repositoryFactory.createUserRepository();
         this.unitOfWork.prepare(this.subscriptionRepository, this.projectRepository, this.userRepository);
+        this.appConfig = appConfig;
     }
 
     protected impl({ queryOptions, requestUser }: FetchProjectsUseCaseInput): Promise<FetchProjectsUseCaseOutput> {
@@ -51,7 +53,7 @@ export class FetchProjectsUseCase extends UseCase<FetchProjectsUseCaseInput, Fet
                         return { id, name: m.name };
                     }),
                     blocked: !allowedSubscriptionIds.some(({ id }) => id === project.sourceSubscription),
-                    publicUrl: `${env.SELF_URL}api/webhooks/in/${requestUser.username}/${project.slug}`,
+                    publicUrl: `${this.appConfig.SELF_URL}api/webhooks/in/${requestUser.username}/${project.slug}`,
                 };
             });
             return right({ count, results });

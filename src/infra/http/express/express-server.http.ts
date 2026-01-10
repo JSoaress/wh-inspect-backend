@@ -4,7 +4,7 @@ import express from "express";
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
 import { UseCaseFactory } from "@/app/_common/application";
-import { env } from "@/shared/config/environment";
+import { IAppConfig } from "@/infra/config/app";
 
 import { AuthMiddlewareFactory, MiddlewareConfig, RouteDefinition, RouteHandler } from "./types";
 
@@ -13,7 +13,7 @@ export class ExpressHttpServer {
     private globalMiddlewares: MiddlewareConfig[] = [];
     private authMiddleware?: AuthMiddlewareFactory;
 
-    constructor(private baseUrl: string, private useCaseFactory: UseCaseFactory) {
+    constructor(private baseUrl: string, private appConfig: IAppConfig, private useCaseFactory: UseCaseFactory) {
         this.app = express();
         this.app.use(express.json({ limit: "1mb" }));
         this.app.use(cors());
@@ -31,7 +31,7 @@ export class ExpressHttpServer {
     route(def: RouteDefinition): void {
         const { method, path, auth, middlewares } = def;
         const url = this.buildUrl(this.baseUrl, ...path.split("/"));
-        if (env.NODE_ENV !== "production") console.info(`[${method.toUpperCase()}] ${url}`);
+        if (this.appConfig.NODE_ENV !== "production") console.info(`[${method.toUpperCase()}] ${url}`);
         const pipeline: express.RequestHandler[] = [];
         if (auth && this.authMiddleware) pipeline.push(this.authMiddleware(this.useCaseFactory));
         if (middlewares) pipeline.push(...middlewares(this.useCaseFactory));

@@ -32,7 +32,9 @@ import { SendEmailForPasswordRecoveryUseCase } from "@/app/users/application/use
 import { SendUserActivationEmailUseCase } from "@/app/users/application/use-cases/users/send-user-activation-email";
 import { UpdateUserUseCase } from "@/app/users/application/use-cases/users/update-user";
 import { JsonWebToken } from "@/infra/adapters/jwt";
+import { Logger } from "@/infra/adapters/logger";
 import { IWebSocket } from "@/infra/adapters/ws";
+import { IAppConfig } from "@/infra/config/app";
 import { IRepositoryFactory } from "@/infra/database";
 import { ICacheProvider } from "@/infra/providers/cache";
 import { IMail } from "@/infra/providers/mail";
@@ -45,7 +47,9 @@ export class UseCaseFactory {
         private jwt: JsonWebToken,
         private ws: IWebSocket,
         private cache: ICacheProvider,
-        private queue: IQueue
+        private queue: IQueue,
+        private appConfig: IAppConfig,
+        readonly logger: Logger
     ) {}
 
     createUserUseCase() {
@@ -53,7 +57,11 @@ export class UseCaseFactory {
     }
 
     sendUserActivationEmail() {
-        return new SendUserActivationEmailUseCase({ repositoryFactory: this.repositoryFactory, mail: this.mail });
+        return new SendUserActivationEmailUseCase({
+            repositoryFactory: this.repositoryFactory,
+            mail: this.mail,
+            appConfig: this.appConfig,
+        });
     }
 
     activateUserUseCase() {
@@ -65,11 +73,19 @@ export class UseCaseFactory {
     }
 
     authenticateUserUseCase() {
-        return new AuthenticateUserUseCase({ repositoryFactory: this.repositoryFactory, jwt: this.jwt });
+        return new AuthenticateUserUseCase({
+            repositoryFactory: this.repositoryFactory,
+            jwt: this.jwt,
+            appConfig: this.appConfig,
+        });
     }
 
     checkAuthenticatedUserUseCase() {
-        return new CheckAuthenticatedUserUseCase({ repositoryFactory: this.repositoryFactory, jwt: this.jwt });
+        return new CheckAuthenticatedUserUseCase({
+            repositoryFactory: this.repositoryFactory,
+            jwt: this.jwt,
+            appConfig: this.appConfig,
+        });
     }
 
     authenticatedUserDecorator(useCase: CheckAuthenticatedUserUseCase | GetUserUseCase) {
@@ -81,11 +97,11 @@ export class UseCaseFactory {
     }
 
     fetchProjectsUseCase() {
-        return new FetchProjectsUseCase({ repositoryFactory: this.repositoryFactory });
+        return new FetchProjectsUseCase({ repositoryFactory: this.repositoryFactory, appConfig: this.appConfig });
     }
 
     createProjectUseCase() {
-        return new CreateProjectUseCase({ repositoryFactory: this.repositoryFactory });
+        return new CreateProjectUseCase({ repositoryFactory: this.repositoryFactory, appConfig: this.appConfig });
     }
 
     updateProjectUseCase() {
@@ -157,7 +173,11 @@ export class UseCaseFactory {
     }
 
     sendEmailForPasswordRecoveryUseCase() {
-        return new SendEmailForPasswordRecoveryUseCase({ repositoryFactory: this.repositoryFactory, mail: this.mail });
+        return new SendEmailForPasswordRecoveryUseCase({
+            repositoryFactory: this.repositoryFactory,
+            mail: this.mail,
+            appConfig: this.appConfig,
+        });
     }
 
     resetPasswordUseCase() {
