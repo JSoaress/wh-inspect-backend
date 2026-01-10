@@ -2,7 +2,7 @@
     "name": "hookhub-api",
     "version": "1.0.0",
     "main": "index.js",
-    "repository": "git@github.com:JSoaress/bp-node-api.git",
+    "repository": "git@github.com:JSoaress/wh-inspect-backend.git",
     "author": "João Vitor <joao_vitorsgs@hotmail.com>",
     "license": "MIT",
     "engines": {
