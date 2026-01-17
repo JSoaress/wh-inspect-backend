@@ -27,16 +27,13 @@ export class SubscriptionPgRepository
             rows: [rowProject],
         } = await this.query(queryProjects, [user.getId()]);
         const now = new Date();
-        const month = now.getMonth() + 1;
-        const year = now.getFullYear();
-        const startDate = `${year}-${month}-01`;
-        const endDate = `${year}-${month}-${now.getDate()}`;
-        const queryEvents = `SELECT count(w.id) FROM webhooks w
-        INNER JOIN projects p ON w.project_id = p.id
-        WHERE p."owner" = $1 AND w.received_at BETWEEN $2 AND $3;`;
+        const yearMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;
+        const queryEvents = `SELECT sum(pu.events_count) AS count FROM project_usage pu
+        INNER JOIN projects p ON pu.project_id = p.id
+        WHERE p."owner" = $1 AND pu.year_month = $2;`;
         const {
             rows: [rowEvents],
-        } = await this.query(queryEvents, [user.getId(), startDate, endDate]);
+        } = await this.query(queryEvents, [user.getId(), yearMonth]);
         return {
             projects: parseNumber(rowProject.count),
             eventsThisMonth: parseNumber(rowEvents.count),
