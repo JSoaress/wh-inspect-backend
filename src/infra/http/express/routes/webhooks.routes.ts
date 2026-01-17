@@ -12,7 +12,6 @@ export function webhooksRouter(httpServer: ExpressHttpServer) {
                 ipLimiter,
                 routeTimeout(5000),
                 authorizationBasedUser(factory.authenticatedUserDecorator(factory.getUserUseCase())),
-                checkPlanLimit("receive-event", factory.checkSubscriptionConsumption()),
                 auditLog(factory.logger, "EVENT_RECEIVED"),
             ];
         },
