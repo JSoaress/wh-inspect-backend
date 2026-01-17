@@ -46,7 +46,7 @@ export class PgWhereFilter extends DatabaseFilter<void> {
         this.where = new SqlWhereBuilder();
     }
 
-    filter(filterOptions: DbFilterOptions, filter?: Where): SqlWhereBuilder | null {
+    filter(filterOptions: DbFilterOptions<any>, filter?: Where): SqlWhereBuilder | null {
         if (!filter || !Object.keys(filter).length) return null;
         const { columns } = filterOptions;
         Object.entries<unknown | FilterOperators<unknown>>(filter).forEach(([field, value]) => {

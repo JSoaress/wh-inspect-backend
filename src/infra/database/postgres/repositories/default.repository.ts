@@ -12,7 +12,7 @@ import {
     DbTransactionNotPreparedError,
 } from "ts-arch-kit/dist/database";
 
-import { DbFilterOptions, DbColumns, IRepository } from "../../helpers";
+import { ColumnMap, DbFilterOptions, IRepository } from "../../helpers";
 import { IDbMapper } from "../db-mapper";
 import { PgWhereFilter } from "./pg-where";
 
@@ -65,7 +65,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         let exists = false;
         if (data.id !== 0) exists = await this.exists({ id: data.id });
         if (!exists) {
-            const ignore: string[] = data.id === 0 ? ["id"] : [];
+            const ignore: string[] = ["0", 0].includes(data.id || 0) ? ["id"] : [];
             const insertObj = this.removeFieldsFromObject(persistenceData, ignore);
             const fields = Object.keys(insertObj);
             const values = Object.values(insertObj);
@@ -93,7 +93,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         await this.query(query, [model.id]);
     }
 
-    filter(filterOptions: DbFilterOptions, filter?: Where): [string, any[]] {
+    filter(filterOptions: DbFilterOptions<T>, filter?: Where): [string, any[]] {
         const pgWhereFilter = new PgWhereFilter();
         const where = pgWhereFilter.filter(filterOptions, filter);
         if (!where) return ["", []];
@@ -101,7 +101,7 @@ export class DefaultPgRepository<T extends AbstractModelProps, P = Record<string
         return [sql, params];
     }
 
-    sort(columns: DbColumns, sortParams?: SortParams[]): string {
+    sort(columns: ColumnMap<T>, sortParams?: SortParams[]): string {
         if (!sortParams || !sortParams.length) return "";
         const order = sortParams.map((sort) => {
             const { column, order: direction } = sort;
