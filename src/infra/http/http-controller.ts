@@ -28,6 +28,9 @@ export class HttpController {
         router.feedbackRouter(this.httpServer);
 
         this.httpServer.useMiddleware({ position: "after", middleware: () => middlewares.notFoundRoute });
-        this.httpServer.useMiddleware({ position: "after", middleware: () => middlewares.errorHandler });
+        this.httpServer.useMiddleware({
+            position: "after",
+            middleware: (factory) => middlewares.errorHandler(factory.logger),
+        });
     }
 }
