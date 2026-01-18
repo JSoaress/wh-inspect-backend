@@ -89,7 +89,7 @@ export class Subscription extends Entity<SubscriptionDTO> {
         switch (action) {
             case "add-project": {
                 if (!(this.maxProjects < 0 || consumption.projects + 1 <= this.maxProjects))
-                    return left(new PlanLimitReachedError("projetos", this.maxProjects));
+                    return left(new PlanLimitReachedError("projects", this.maxProjects));
                 return right(true);
             }
             case "replay-event": {

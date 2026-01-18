@@ -131,13 +131,20 @@ export class NoSubscriptionPlanError extends ConflictError {
     }
 }
 
-export class PlanLimitReachedError extends ForbiddenError {
-    constructor(resource: string, quantity = 0) {
-        if (resource === "replay") {
-            super(`Seu plano não permite realizar replays de webhooks.`);
-        } else {
-            super(`Seu plano atingiu o limite máximo de ${resource}/mês: ${quantity}`);
-        }
+export class PlanLimitReachedError extends ConflictError {
+    constructor(private resource: string, private max = 0) {
+        let message = `Seu plano atingiu o limite máximo de ${resource}/mês.`;
+        if (resource === "replay") message = "Seu plano não permite realizar replays de webhooks.";
+        if (resource === "projects") message = "Seu plano atingiu o limite máximo de projetos.";
+        super(message);
+    }
+
+    toJSON(): Record<string, unknown> {
+        return {
+            ...super.toJSON(),
+            resource: this.resource,
+            max: this.max,
+        };
     }
 }
 
