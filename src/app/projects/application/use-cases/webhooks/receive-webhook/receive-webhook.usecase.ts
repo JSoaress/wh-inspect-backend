@@ -7,7 +7,7 @@ import { WebHookLogEntityFactory } from "@/app/projects/domain/models/webhook";
 import { ICacheProvider } from "@/infra/providers/cache";
 import { IQueue } from "@/infra/queue";
 
-import { IProjectRepository, IProjectUsageRepository, IWebhookLogRepository } from "../../../repos";
+import { IProjectRepository, IWebhookLogRepository, IWebhookUsageRepository } from "../../../repos";
 import {
     ReceiveWebhookUseCaseGateway,
     ReceiveWebhookUseCaseInput,
@@ -17,7 +17,7 @@ import {
 export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, ReceiveWebhookUseCaseOutput> {
     private unitOfWork: UnitOfWork;
     private projectRepository: IProjectRepository;
-    private projectUsageRepository: IProjectUsageRepository;
+    private webhookUsageRepository: IWebhookUsageRepository;
     private webhookLogRepository: IWebhookLogRepository;
     private cache: ICacheProvider;
     private queue: IQueue;
@@ -26,9 +26,9 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.projectRepository = repositoryFactory.createProjectRepository();
-        this.projectUsageRepository = repositoryFactory.createProjectUsageRepository();
+        this.webhookUsageRepository = repositoryFactory.createWebhookUsageRepository();
         this.webhookLogRepository = repositoryFactory.createWebhookLogRepository();
-        this.unitOfWork.prepare(this.projectRepository, this.projectUsageRepository, this.webhookLogRepository);
+        this.unitOfWork.prepare(this.projectRepository, this.webhookUsageRepository, this.webhookLogRepository);
         this.cache = cache;
         this.queue = queue;
     }
@@ -70,8 +70,8 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
     private async checkIfOutOfSubscription(project: ProjectDTO): Promise<boolean> {
         const today = new Date();
         const yearMonth = `${today.getFullYear()}/${today.getMonth() + 1}`;
-        const projectUsage = await this.projectUsageRepository.findOne({
-            filter: { projectId: `${project.id}`, yearMonth },
+        const projectUsage = await this.webhookUsageRepository.findOne({
+            filter: { subscriber: `${project.owner}`, yearMonth },
         });
         return projectUsage ? !projectUsage.canReceiveEvent() : true;
     }

@@ -2,13 +2,13 @@ import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
 import { NotFoundModelError, UseCase } from "@/app/_common";
-import { ProjectUsageEntityFactory } from "@/app/projects/domain/models/project-usage";
+import { WebhookUsageEntityFactory } from "@/app/projects/domain/models/webhook-usage";
 import { ISubscriptionRepository } from "@/app/subscription/application/repos";
 import { Subscription } from "@/app/subscription/domain/models/subscription";
 import { IUserRepository } from "@/app/users/application/repos";
 import { User } from "@/app/users/domain/models/user";
 
-import { IProjectRepository, IProjectUsageRepository } from "../../../repos";
+import { IProjectRepository, IWebhookUsageRepository } from "../../../repos";
 import {
     RegisterReceivedWebhookUseCaseInput,
     RegisterReceivedWebhookUseCaseOutput,
@@ -21,7 +21,7 @@ export class RegisterReceivedWebhookUseCase extends UseCase<
 > {
     private unitOfWork: UnitOfWork;
     private projectRepository: IProjectRepository;
-    private projectUsageRepository: IProjectUsageRepository;
+    private webhookUsageRepository: IWebhookUsageRepository;
     private userRepository: IUserRepository;
     private subscriptionRepository: ISubscriptionRepository;
 
@@ -29,12 +29,12 @@ export class RegisterReceivedWebhookUseCase extends UseCase<
         super();
         this.unitOfWork = repositoryFactory.createUnitOfWork();
         this.projectRepository = repositoryFactory.createProjectRepository();
-        this.projectUsageRepository = repositoryFactory.createProjectUsageRepository();
+        this.webhookUsageRepository = repositoryFactory.createWebhookUsageRepository();
         this.userRepository = repositoryFactory.createUserRepository();
         this.subscriptionRepository = repositoryFactory.createSubscriptionRepository();
         this.unitOfWork.prepare(
             this.projectRepository,
-            this.projectUsageRepository,
+            this.webhookUsageRepository,
             this.userRepository,
             this.subscriptionRepository
         );
@@ -48,25 +48,25 @@ export class RegisterReceivedWebhookUseCase extends UseCase<
             const year = today.getFullYear();
             const month = today.getMonth() + 1;
             const yearMonth = `${year}/${month}`;
-            let projectUsage = await this.projectUsageRepository.findOne({
-                filter: { projectId: `${input.project}`, yearMonth },
+            let webhookUsage = await this.webhookUsageRepository.findOne({
+                filter: { subscriber: project.owner, yearMonth },
             });
-            if (!projectUsage) {
+            if (!webhookUsage) {
                 const projectOwner = (await this.userRepository.findById(project.owner)) as User;
                 const currentSubscription = (await this.subscriptionRepository.getCurrentSubscriptionByUser(
                     projectOwner
                 )) as Subscription;
-                const projectUsageOrError = ProjectUsageEntityFactory.create({
-                    projectId: `${input.project}`,
+                const webhookUsageOrError = WebhookUsageEntityFactory.create({
+                    subscriber: projectOwner.getId(),
                     maxEvents: currentSubscription.eventsMonth,
                     year,
                     month,
                 });
-                if (projectUsageOrError.isLeft()) return left(projectUsageOrError.value);
-                projectUsage = projectUsageOrError.value;
+                if (webhookUsageOrError.isLeft()) return left(webhookUsageOrError.value);
+                webhookUsage = webhookUsageOrError.value;
             }
-            projectUsage.count();
-            await this.projectUsageRepository.save(projectUsage);
+            webhookUsage.count();
+            await this.webhookUsageRepository.save(webhookUsage);
             return right(undefined);
         });
     }
