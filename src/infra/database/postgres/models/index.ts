@@ -94,8 +94,8 @@ export type PgFeedbackDTO = PgModelId & {
     updated_at: Date | null;
 };
 
-export type PgProjectUsageDTO = PgModelId & {
-    project_id: string;
+export type PgWebhookUsageDTO = PgModelId & {
+    subscriber: string;
     year_month: string;
     max_events: number;
     events_count: number;
