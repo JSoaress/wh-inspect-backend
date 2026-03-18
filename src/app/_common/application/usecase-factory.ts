@@ -32,7 +32,6 @@ import { SendEmailForPasswordRecoveryUseCase } from "@/app/users/application/use
 import { SendUserActivationEmailUseCase } from "@/app/users/application/use-cases/users/send-user-activation-email";
 import { UpdateUserUseCase } from "@/app/users/application/use-cases/users/update-user";
 import { JsonWebToken } from "@/infra/adapters/jwt";
-import { Logger } from "@/infra/adapters/logger";
 import { IWebSocket } from "@/infra/adapters/ws";
 import { IAppConfig } from "@/infra/config/app";
 import { IRepositoryFactory } from "@/infra/database";
@@ -50,7 +49,6 @@ export class UseCaseFactory {
         private cache: ICacheProvider,
         private queue: IQueue,
         private appConfig: IAppConfig,
-        readonly logger: Logger,
         private passwordPolicyProvider: IPasswordPolicyProvider
     ) {}
 

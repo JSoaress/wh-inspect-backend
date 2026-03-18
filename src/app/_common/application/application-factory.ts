@@ -1,7 +1,6 @@
 import http from "http";
 
 import { JsonWebToken } from "@/infra/adapters/jwt";
-import { Logger } from "@/infra/adapters/logger";
 import { SimpleWebSocket } from "@/infra/adapters/ws";
 import { EnvAppConfig } from "@/infra/config/app";
 import { RepositoryFactory } from "@/infra/database";
@@ -18,13 +17,13 @@ export class ApplicationFactory {
         const appConfig = new EnvAppConfig();
 
         // ---------- Infra ----------
-        const logger = new Logger(appConfig);
+        // const logger = new Logger(appConfig);
         const repositoryFactory = RepositoryFactory.getRepository(appConfig);
         const mail = MailFactory.getMail(appConfig);
         const jwt = new JsonWebToken();
         const ws = new SimpleWebSocket();
         const cache = new MemoryCache();
-        const queue = new RabbitMQ(appConfig, logger);
+        const queue = new RabbitMQ(appConfig);
         const passwordPolicyProvider = new PasswordPolicyProvider(appConfig);
 
         await queue.connect();
@@ -38,7 +37,6 @@ export class ApplicationFactory {
             cache,
             queue,
             appConfig,
-            logger,
             passwordPolicyProvider
         );
 
@@ -60,7 +58,6 @@ export class ApplicationFactory {
         return {
             server,
             config: appConfig,
-            logger,
         };
     }
 }

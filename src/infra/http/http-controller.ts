@@ -30,7 +30,7 @@ export class HttpController {
         this.httpServer.useMiddleware({ position: "after", middleware: () => middlewares.notFoundRoute });
         this.httpServer.useMiddleware({
             position: "after",
-            middleware: (factory) => middlewares.errorHandler(factory.logger),
+            middleware: () => middlewares.errorHandler(),
         });
     }
 }

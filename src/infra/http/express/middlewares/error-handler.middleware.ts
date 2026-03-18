@@ -4,37 +4,37 @@ import { BasicError } from "ts-arch-kit/dist/core/errors";
 import { HttpStatusCodes } from "ts-arch-kit/dist/http";
 
 import * as appErrors from "@/app/_common/errors";
-import { Logger } from "@/infra/adapters/logger";
 import { HttpRouteNotFoundError } from "@/shared/errors";
 
-export function errorHandler(logger: Logger) {
+export function errorHandler() {
     return (err: Error | BasicError, req: Request, res: Response, next: NextFunction) => {
-        const baseLog = {
-            level: "error",
-            message: err.message,
-            method: req.method,
-            url: req.originalUrl,
-            externalId: req.trace.requestId,
-            duration: Date.now() - req.trace.startAt,
-            stack: err.stack,
-        };
+        console.log(err);
+        // const baseLog = {
+        //     level: "error",
+        //     message: err.message,
+        //     method: req.method,
+        //     url: req.originalUrl,
+        //     externalId: req.trace.requestId,
+        //     duration: Date.now() - req.trace.startAt,
+        //     stack: err.stack,
+        // };
         if (!(err instanceof BasicError)) {
-            logger.log({
-                ...baseLog,
-                type: "http",
-                status: HttpStatusCodes.INTERNAL_SERVER_ERROR,
-                error: err as unknown as Record<string, unknown>,
-                tags: ["http", "non-operational"],
-            });
+            // logger.log({
+            //     ...baseLog,
+            //     type: "http",
+            //     status: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            //     error: err as unknown as Record<string, unknown>,
+            //     tags: ["http", "non-operational"],
+            // });
             return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json(err);
         }
-        logger.log({
-            ...baseLog,
-            type: "http",
-            status: HttpStatusCodes.BAD_REQUEST,
-            error: err.toJSON(),
-            tags: ["http", "operational"],
-        });
+        // logger.log({
+        //     ...baseLog,
+        //     type: "http",
+        //     status: HttpStatusCodes.BAD_REQUEST,
+        //     error: err.toJSON(),
+        //     tags: ["http", "operational"],
+        // });
         switch (err.constructor) {
             // 400
             case appErrors.MissingParamError:
