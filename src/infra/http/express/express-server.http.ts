@@ -50,7 +50,7 @@ export class ExpressHttpServer {
         return async (req, res, next) => {
             try {
                 const result = await handler(this.useCaseFactory, req);
-                if (!result) return res.sendStatus(route.statusCode ?? HttpStatusCodes.NO_CONTENT);
+                if (!result) return res.status(route.statusCode ?? HttpStatusCodes.NO_CONTENT).send();
                 // if (typeof result === "object" && "body" in result) {
                 //     return res
                 //         .status((result as any).statusCode ?? route.statusCode ?? HttpStatusCodes.OK)
