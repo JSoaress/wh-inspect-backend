@@ -8,33 +8,22 @@ import { HttpRouteNotFoundError } from "@/shared/errors";
 
 export function errorHandler() {
     return (err: Error | BasicError, req: Request, res: Response, next: NextFunction) => {
-        console.log(err);
-        // const baseLog = {
-        //     level: "error",
-        //     message: err.message,
-        //     method: req.method,
-        //     url: req.originalUrl,
-        //     externalId: req.trace.requestId,
-        //     duration: Date.now() - req.trace.startAt,
-        //     stack: err.stack,
-        // };
+        const log = {
+            level: "error",
+            message: err.message,
+            method: req.method,
+            url: req.originalUrl,
+            externalId: req.trace.requestId,
+            duration: Date.now() - req.trace.startAt,
+            stack: err.stack,
+            query: req.query,
+            headers: req.headers,
+            body: req.body,
+        };
+        console.log(log);
         if (!(err instanceof BasicError)) {
-            // logger.log({
-            //     ...baseLog,
-            //     type: "http",
-            //     status: HttpStatusCodes.INTERNAL_SERVER_ERROR,
-            //     error: err as unknown as Record<string, unknown>,
-            //     tags: ["http", "non-operational"],
-            // });
             return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json(err);
         }
-        // logger.log({
-        //     ...baseLog,
-        //     type: "http",
-        //     status: HttpStatusCodes.BAD_REQUEST,
-        //     error: err.toJSON(),
-        //     tags: ["http", "operational"],
-        // });
         switch (err.constructor) {
             // 400
             case appErrors.MissingParamError:

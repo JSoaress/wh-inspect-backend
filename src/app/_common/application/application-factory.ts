@@ -46,11 +46,11 @@ export class ApplicationFactory {
 
         ws.setGetUserUseCase(useCaseFactory.getUserUseCase());
 
-        const httpServer = new ExpressHttpServer("/api", appConfig, useCaseFactory);
+        const httpServer = new ExpressHttpServer();
         const app = httpServer.getServer();
         const server = http.createServer(app);
 
-        const httpController = new HttpController(httpServer);
+        const httpController = new HttpController(app, useCaseFactory);
         httpController.setup();
 
         ws.start(server);
