@@ -13,7 +13,7 @@ export function webhooksRouter(useCaseFactory: UseCaseFactory): Router {
         "/in/:username/:slug",
         ipLimiter,
         routeTimeout(5000),
-        authorizationBasedUser(useCaseFactory.authenticatedUserDecorator(useCaseFactory.getUserUseCase())),
+        authorizationBasedUser(() => useCaseFactory.authenticatedUserDecorator()),
         // auditLog(factory.logger, "EVENT_RECEIVED"),
         async (req, res) => {
             const { requestUser } = req;

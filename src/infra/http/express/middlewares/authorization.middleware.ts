@@ -3,11 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { ForbiddenError, InvalidTokenError } from "@/app/_common";
 import { AuthenticatedUserDecorator } from "@/app/users/application/use-cases/users/authenticated-user-decorator";
 
-export function authorization(useCase: AuthenticatedUserDecorator) {
+export function authorization(getUseCase: () => AuthenticatedUserDecorator) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const header = req.headers.authorization;
         if (!header) return next(new InvalidTokenError("Token de autenticação não informado."));
         const [, authToken] = header.split(" ");
+        const useCase = getUseCase();
         const result = await useCase.execute({ type: "token", token: authToken });
         if (result.isLeft()) return next(result.value);
         req.requestUser = result.value;
@@ -15,9 +16,10 @@ export function authorization(useCase: AuthenticatedUserDecorator) {
     };
 }
 
-export function authorizationBasedUser(useCase: AuthenticatedUserDecorator) {
+export function authorizationBasedUser(getUseCase: () => AuthenticatedUserDecorator) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const { username } = req.params;
+        const useCase = getUseCase();
         const result = await useCase.execute({ type: "username", username });
         if (result.isLeft()) return next(result.value);
         req.requestUser = result.value;
