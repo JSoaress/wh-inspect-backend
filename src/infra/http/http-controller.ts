@@ -10,8 +10,8 @@ export class HttpController {
     constructor(private httpServer: Express, private useCaseFactory: UseCaseFactory) {}
 
     setup() {
-        this.httpServer.use("/api", middlewares.trace);
-        this.httpServer.use("/api", middlewares.queryOptions);
+        this.httpServer.use(middlewares.trace);
+        this.httpServer.use(middlewares.queryOptions);
 
         this.httpServer.get("/api/ping", (req, res) => {
             return res.status(HttpStatusCodes.OK).send("pong");
@@ -21,9 +21,7 @@ export class HttpController {
 
         this.httpServer.use(
             "/api",
-            middlewares.authorization(
-                this.useCaseFactory.authenticatedUserDecorator(this.useCaseFactory.checkAuthenticatedUserUseCase())
-            )
+            middlewares.authorization(() => this.useCaseFactory.authenticatedUserDecorator())
         );
 
         this.httpServer.use("/api", router.privateRouter(this.useCaseFactory));
