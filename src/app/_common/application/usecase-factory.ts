@@ -92,8 +92,12 @@ export class UseCaseFactory {
         });
     }
 
-    authenticatedUserDecorator(useCase: CheckAuthenticatedUserUseCase | GetUserUseCase) {
-        return new AuthenticatedUserDecorator({ repositoryFactory: this.repositoryFactory, useCase });
+    authenticatedUserDecorator() {
+        return new AuthenticatedUserDecorator({
+            repositoryFactory: this.repositoryFactory,
+            useCaseFactory: this,
+            cache: this.cache,
+        });
     }
 
     getUserUseCase() {

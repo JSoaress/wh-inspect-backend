@@ -1,15 +1,15 @@
 import { BasicError } from "ts-arch-kit/dist/core/errors";
 import { Either } from "ts-arch-kit/dist/core/helpers";
 
+import { UseCaseFactory } from "@/app/_common/application";
 import { AuthenticatedUserDTO } from "@/app/users/domain/models/user";
 import { IRepositoryFactory } from "@/infra/database";
-
-import { CheckAuthenticatedUserUseCase } from "../check-authenticated-user";
-import { GetUserUseCase } from "../get-user";
+import { ICacheProvider } from "@/infra/providers/cache";
 
 export type AuthenticatedUserDecoratorGateway = {
     repositoryFactory: IRepositoryFactory;
-    useCase: CheckAuthenticatedUserUseCase | GetUserUseCase;
+    cache: ICacheProvider;
+    useCaseFactory: UseCaseFactory;
 };
 
 export type AuthenticatedUserDecoratorInput =
