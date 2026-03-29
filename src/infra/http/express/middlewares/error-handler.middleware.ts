@@ -8,19 +8,6 @@ import { HttpRouteNotFoundError } from "@/shared/errors";
 
 export function errorHandler() {
     return (err: Error | BasicError, req: Request, res: Response, next: NextFunction) => {
-        const log = {
-            level: "error",
-            message: err.message,
-            method: req.method,
-            url: req.originalUrl,
-            externalId: req.trace.requestId,
-            duration: Date.now() - req.trace.startAt,
-            stack: err.stack,
-            query: req.query,
-            headers: req.headers,
-            body: req.body,
-        };
-        console.log(log);
         if (!(err instanceof BasicError)) {
             return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json(err);
         }
@@ -45,6 +32,7 @@ export function errorHandler() {
             case appErrors.InvalidUserError:
             case appErrors.ConflictError:
             case appErrors.UsernameTakenError:
+            case appErrors.ProjectSlugTakenError:
             case appErrors.InvalidSubscriptionActionError:
             case appErrors.NoSubscriptionPlanError:
             case appErrors.PlanLimitReachedError:
