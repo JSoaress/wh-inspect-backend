@@ -73,6 +73,7 @@ export class ReceiveWebhookUseCase extends UseCase<ReceiveWebhookUseCaseInput, R
         const projectUsage = await this.webhookUsageRepository.findOne({
             filter: { subscriber: `${project.owner}`, yearMonth },
         });
-        return projectUsage ? !projectUsage.canReceiveEvent() : true;
+        if (!projectUsage) return false;
+        return !projectUsage.canReceiveEvent();
     }
 }
