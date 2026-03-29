@@ -1,7 +1,7 @@
 import { left, right } from "ts-arch-kit/dist/core/helpers";
 import { UnitOfWork } from "ts-arch-kit/dist/database";
 
-import { ConflictError, UseCase } from "@/app/_common";
+import { ProjectSlugTakenError, UseCase } from "@/app/_common";
 import { ProjectEntityFactory } from "@/app/projects/domain/models/project";
 import { IAppConfig } from "@/infra/config/app";
 
@@ -38,8 +38,7 @@ export class CreateProjectUseCase extends UseCase<CreateProjectUseCaseInput, Cre
                 slug: projectCreated.slug,
                 owner: projectCreated.owner,
             });
-            if (slugInUse)
-                return left(new ConflictError(`Você já possui outro projeto utilizando a slug "${projectCreated.slug}".`));
+            if (slugInUse) return left(new ProjectSlugTakenError(projectCreated.slug));
             const savedProject = await this.projectRepository.save(projectCreated);
             return right({
                 ...savedProject,
