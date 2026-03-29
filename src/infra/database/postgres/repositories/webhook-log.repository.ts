@@ -4,7 +4,7 @@ import { IWebhookLogRepository } from "@/app/projects/application/repos";
 import { ProjectDTO } from "@/app/projects/domain/models/project";
 import { SimplifiedWebhook, WebHookLogDTO } from "@/app/projects/domain/models/webhook";
 
-import { DbColumns, DbFilterOptions } from "../../helpers";
+import { ColumnMap, DbFilterOptions } from "../../helpers";
 import { WebhookLogPgMapper } from "../mappers";
 import { PgWebhookLogDTO } from "../models";
 import { DefaultPgRepository } from "./default.repository";
@@ -23,11 +23,11 @@ export class WebhookLogPgRepository
     }
 
     async findSimplified(queryOptions?: QueryOptions): Promise<SimplifiedWebhook[]> {
-        const columns: DbColumns = {};
+        const columns: ColumnMap<WebHookLogDTO> = {} as ColumnMap<WebHookLogDTO>;
         Object.entries(this.mapper.filterOptions.columns).forEach(([k, v]) => {
             columns[k] = { ...v, columnName: `w.${v.columnName}` };
         });
-        const filterOptions: DbFilterOptions = { ...this.mapper.filterOptions, columns };
+        const filterOptions: DbFilterOptions<WebHookLogDTO> = { ...this.mapper.filterOptions, columns };
         const base = `SELECT w.id, w.project_id, p.name, w.received_from, w.received_at, w.replayed_at FROM ${this.tableName} w
         JOIN projects p ON p.id = w.project_id`;
         const [where, params] = this.filter(filterOptions, queryOptions?.filter);
