@@ -114,7 +114,7 @@ export class User extends Entity<UserDTO> {
         token?: string
     ): Promise<Either<InvalidUserError | InvalidTokenError | InvalidPasswordError, void>> {
         if (!this.isActive) return left(new InvalidUserError());
-        if (token && token !== this.props.userToken)
+        if (token && (!token.startsWith("cp") || token !== this.props.userToken))
             return left(new InvalidTokenError("Token de alteração de senha é inválido."));
         const passwordOrError = await Password.create(plainPassword, { policy: passwordPolicy });
         if (passwordOrError.isLeft()) return left(passwordOrError.value);
