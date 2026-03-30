@@ -17,8 +17,8 @@
         "migrate": "node-pg-migrate"
     },
     "devDependencies": {
-        "@commitlint/cli": "^19.7.1",
-        "@commitlint/config-conventional": "^19.7.1",
+        "@commitlint/cli": "^20.5.0",
+        "@commitlint/config-conventional": "^20.5.0",
         "@tsconfig/node20": "^20.1.6",
         "@types/amqplib": "^0.10.8",
         "@types/bcrypt": "^6.0.0",
@@ -67,7 +67,7 @@
         "handlebars": "^4.7.8",
         "is-object": "^1.0.2",
         "jsonwebtoken": "^9.0.2",
-        "nodemailer": "^7.0.5",
+        "nodemailer": "^8.0.4",
         "pg": "^8.16.3",
         "pm2": "^6.0.14",
         "ts-arch-kit": "^2.4.0",
