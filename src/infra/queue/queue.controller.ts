@@ -21,5 +21,10 @@ export class QueueController {
             const response = await useCase.execute(input);
             if (response.isLeft()) throw response.value;
         });
+        this.queue.on("saveWebhook", async (input) => {
+            const useCase = this.useCaseFactory.saveWebhookUseCase();
+            const response = await useCase.execute(input);
+            if (response.isLeft()) throw response.value;
+        });
     }
 }
