@@ -133,8 +133,8 @@ export class UseCaseFactory {
     }
 
     receiveWebhookUseCase() {
-        return new ReceiveWebhookUseCase({
-            repositoryFactory: this.repositoryFactory,
+        return new ReceiveWebhookUseCase({ cache: this.cache, queue: this.queue });
+    }
             cache: this.cache,
             queue: this.queue,
         });
