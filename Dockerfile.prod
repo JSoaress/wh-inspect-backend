@@ -1,7 +1,10 @@
 # -------- BASE (apenas para build) --------
 FROM node:22-slim AS base
 WORKDIR /app
-RUN corepack enable
+
+RUN corepack disable
+
+RUN npm install -g yarn
 
 # -------- BUILD --------
 FROM base AS build
@@ -14,21 +17,22 @@ COPY . .
 RUN yarn build
 
 # -------- PRODUCTION (runtime limpo) --------
-FROM node:22-slim AS production
-WORKDIR /app
+FROM base AS production
 
-RUN corepack enable
+RUN useradd appuser
 
 COPY package.json yarn.lock ./
-COPY .env .env
 COPY ./migrations ./migrations
 
 # Instala deps de produção SEM toolchain
 RUN yarn install \
-  --frozen-lockfile \
-  --production=true \
-  --no-cache \
-  && yarn add node-pg-migrate@8.0.3 \
-  && rm -rf /usr/local/share/.cache/yarn
+--frozen-lockfile \
+--production=true \
+--no-cache \
+&& yarn add node-pg-migrate@8.0.3
+
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 COPY --from=build /app/dist ./dist

@@ -11,6 +11,13 @@ services:
             - "127.0.0.1:3333:3333"
         env_file:
             - ./.env
+        networks:
+            - internal
+        security_opt:
+            - no-new-privileges:true
+        tmpfs:
+            - /tmp
+        read_only: true
         depends_on:
             - hookhub-migrate
 
@@ -22,6 +29,8 @@ services:
         command: yarn migrate up
         env_file:
             - ./.env
+        networks:
+            - internal
         depends_on:
             - hookhub-db
 
@@ -31,8 +40,10 @@ services:
         restart: unless-stopped
         env_file:
             - ./.env
-        ports:
-            - "54321:5432"
+        networks:
+            - internal
+        security_opt:
+            - no-new-privileges:true
         volumes:
             - hookhub_pgdata:/var/lib/postgresql/data
 
@@ -40,13 +51,19 @@ services:
         image: rabbitmq:3-management
         container_name: hookhub-queue
         restart: unless-stopped
-        ports:
-            - "15673:15672"
         env_file:
             - ./.env
+        networks:
+            - internal
+        security_opt:
+            - no-new-privileges:true
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
     hookhub_pgdata:
     rabbitmq_data:
+
+networks:
+    internal:
+        driver: bridge
