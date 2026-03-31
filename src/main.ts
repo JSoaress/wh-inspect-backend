@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 
 import { ApplicationFactory } from "./app/_common/application";
 
-dotenv.config();
+// dotenv.config();
 
 async function bootstrap() {
     const { server } = await ApplicationFactory.create();
