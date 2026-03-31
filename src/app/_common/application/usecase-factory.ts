@@ -13,6 +13,7 @@ import { GetWebhookMetricsUseCase } from "@/app/projects/application/use-cases/w
 import { ReceiveWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/receive-webhook";
 import { RegisterReceivedWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/register-received-webhook";
 import { ReplayWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/replay-webhook";
+import { SaveWebhookUseCase } from "@/app/projects/application/use-cases/webhooks/save-webhook";
 import { CreatePlanUseCase } from "@/app/subscription/application/use-cases/plan/create-plan";
 import { DeletePlanUseCase } from "@/app/subscription/application/use-cases/plan/delete-plan";
 import { FetchPlansUseCase } from "@/app/subscription/application/use-cases/plan/fetch-plans";
@@ -135,9 +136,9 @@ export class UseCaseFactory {
     receiveWebhookUseCase() {
         return new ReceiveWebhookUseCase({ cache: this.cache, queue: this.queue });
     }
-            cache: this.cache,
-            queue: this.queue,
-        });
+
+    saveWebhookUseCase() {
+        return new SaveWebhookUseCase({ repositoryFactory: this.repositoryFactory, queue: this.queue });
     }
 
     forwardWebhookUseCase() {
