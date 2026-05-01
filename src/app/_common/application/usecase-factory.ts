@@ -27,6 +27,7 @@ import { ChangePasswordUseCase } from "@/app/users/application/use-cases/users/c
 import { ChangeUserCliTokenUseCase } from "@/app/users/application/use-cases/users/change-user-cli-token";
 import { CheckAuthenticatedUserUseCase } from "@/app/users/application/use-cases/users/check-authenticated-user";
 import { CreateUserUseCase } from "@/app/users/application/use-cases/users/create-user";
+import { GetConsumptionByUserUseCase } from "@/app/users/application/use-cases/users/get-consumption-by-user";
 import { GetUserUseCase } from "@/app/users/application/use-cases/users/get-user";
 import { ResetPasswordUseCase } from "@/app/users/application/use-cases/users/reset-password";
 import { SendEmailForPasswordRecoveryUseCase } from "@/app/users/application/use-cases/users/send-email-for-password-recovery";
@@ -217,5 +218,9 @@ export class UseCaseFactory {
 
     registerReceivedWebhookUseCase() {
         return new RegisterReceivedWebhookUseCase({ repositoryFactory: this.repositoryFactory });
+    }
+
+    getConsumptionByUserUseCase() {
+        return new GetConsumptionByUserUseCase({ repositoryFactory: this.repositoryFactory });
     }
 }
