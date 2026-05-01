@@ -21,6 +21,13 @@ export function usersRouter(useCaseFactory: UseCaseFactory): Router {
         if (response.isLeft()) return next(response.value);
         return res.status(HttpStatusCodes.OK).json(response.value);
     });
+    router.get("/subscription/consumption", async (req, res, next) => {
+        const { requestUser } = req;
+        const useCase = useCaseFactory.getConsumptionByUserUseCase();
+        const response = await useCase.execute({ requestUser });
+        if (response.isLeft()) return next(response.value);
+        return res.status(HttpStatusCodes.OK).json(response.value);
+    });
 
     return router;
 }
